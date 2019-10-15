@@ -1,1 +1,7 @@
-﻿  MCG_GFX_Framework.vcxproj -> \\bournemouth.ac.uk\data\Student\Home\SciTech\s4921584\Graphics_Computational\PGG_Lab3_v1\Debug\MCG_GFX_Framework.exe
+﻿  Camera.cpp
+  Main.cpp
+  MCG_GFX_Lib.cpp
+  Ray.cpp
+  RayTracer.cpp
+  Generating Code...
+  MCG_GFX_Framework.vcxproj -> C:\Users\s4921584\temp\HermesRayTracer\Debug\MCG_GFX_Framework.exe

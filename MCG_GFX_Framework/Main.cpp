@@ -7,10 +7,12 @@
 #include "Ray.h"
 #include "RayTracer.h"
 
+int windowX = 640;
+int windowY = 480;
 int main( int argc, char *argv[] )
 {
 	// Variable for storing window dimensions
-	glm::ivec2 windowSize( 640, 480 );
+	glm::ivec2 windowSize( windowX, windowY );
 
 	// Call MCG::Init to initialise and create your window
 	// Tell it what size you want the window to be
@@ -54,7 +56,15 @@ int main( int argc, char *argv[] )
 		// Draw the pixel to the screen
 		MCG::DrawPixel( pixelPosition, pixelColour );
 
-		//
+
+
+		for (int x_coord = 0; x_coord < windowX; x_coord++)
+		{
+			for (int y_coord = 0; y_coord < windowY; windowY++)
+			{
+
+			}
+		}
 
 
 	}
