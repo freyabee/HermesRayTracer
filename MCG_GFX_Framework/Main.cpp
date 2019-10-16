@@ -56,13 +56,20 @@ int main( int argc, char *argv[] )
 		// Draw the pixel to the screen
 		MCG::DrawPixel( pixelPosition, pixelColour );
 
-
-
+		//Creation of camera object
+		Camera camera;
+		Ray currentRay;
+		RayTracer tracer;
+		glm::ivec2 pixelPosition;
+		//Iterate through every pixel on the screen.
 		for (int x_coord = 0; x_coord < windowX; x_coord++)
 		{
-			for (int y_coord = 0; y_coord < windowY; windowY++)
+			for (int y_coord = 0; y_coord < windowY; y_coord++)
 			{
-
+				pixelPosition =  glm::ivec2(x_coord, y_coord);
+				currentRay = camera.CalculateRay(pixelPosition);
+				pixelColour = tracer.TraceRay(currentRay);
+				MCG::DrawPixel(pixelPosition, pixelColour);
 			}
 		}
 
