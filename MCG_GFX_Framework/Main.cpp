@@ -1,14 +1,13 @@
 
 #include <cmath>
-
+#include <iostream>
 #include "MCG_GFX_Lib.h"
-
 #include "Camera.h"
 #include "Ray.h"
 #include "RayTracer.h"
 
-int windowX = 640;
-int windowY = 480;
+int windowX = 100;
+int windowY = 100;
 int main( int argc, char *argv[] )
 {
 	// Variable for storing window dimensions
@@ -34,12 +33,12 @@ int main( int argc, char *argv[] )
 
 
 	// Draws a single pixel at the specified coordinates in the specified colour!
-	//MCG::DrawPixel( pixelPosition, pixelColour );
+	//
 
 	// Displays drawing to screen and holds until user closes window
 	// You must call this after all your drawing calls
 	// Program will exit after this line
-	//return MCG::ShowAndHold();
+	
 
 	float timer = 0.0f;
 
@@ -49,33 +48,39 @@ int main( int argc, char *argv[] )
 		MCG::SetBackground( glm::ivec3( 0, 0, 0 ) );
 
 		// Change our pixel's X coordinate according to time
-		pixelPosition.x = (windowSize.x / 2) + (int)(sin(timer) * 100.0f);
+		//pixelPosition.x = (windowSize.x / 2) + (int)(sin(timer) * 100.0f);
 		// Update our time variable
-		timer += 1.0f / 60.0f;
+		//timer += 1.0f / 60.0f;
 
 		// Draw the pixel to the screen
-		MCG::DrawPixel( pixelPosition, pixelColour );
+		//MCG::DrawPixel( pixelPosition, pixelColour );
 
 		//Creation of camera object
 		Camera camera;
 		Ray currentRay;
 		RayTracer tracer;
 		glm::ivec2 pixelPosition;
+		glm::ivec2 queryPoint = windowSize / 2;
+
+
+
 		//Iterate through every pixel on the screen.
-		for (int x_coord = 0; x_coord < windowX; x_coord++)
+		for (int x_coord = 0; x_coord <= windowX; x_coord++)
 		{
-			for (int y_coord = 0; y_coord < windowY; y_coord++)
+			for (int y_coord = 0; y_coord <= windowY; y_coord++)
 			{
+				std::cout << "Pixel: " << "(" << x_coord << "," << y_coord << ")" << std::endl;
 				pixelPosition =  glm::ivec2(x_coord, y_coord);
 				currentRay = camera.CalculateRay(pixelPosition);
 				pixelColour = tracer.TraceRay(currentRay);
+				pixelColour = pixelColour * 255;
 				MCG::DrawPixel(pixelPosition, pixelColour);
+
 			}
 		}
-
-
+		return MCG::ShowAndHold();
 	}
-
+	
 	return 0;
 
 
