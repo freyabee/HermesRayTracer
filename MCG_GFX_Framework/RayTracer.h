@@ -2,6 +2,7 @@
 #include "MCG_GFX_Lib.h"
 #include "Ray.h"
 #include "Collision.h"
+#include <iostream>
 class RayTracer
 {
 private:
