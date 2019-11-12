@@ -25,3 +25,18 @@ void Collision::setCollisionPoint(glm::vec3 _point)
 {
 	collisionPoint = _point;
 }
+
+bool Collision::GetCollided()
+{
+	return collided;
+}
+
+float Collision::GetCollisionDist()
+{
+	return collisionDistance;
+}
+
+glm::vec3 Collision::GetCollisionPoint()
+{
+	return collisionPoint;
+}

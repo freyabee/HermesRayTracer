@@ -1,7 +1,6 @@
 #include "RayTracer.h"
 
 
-
 RayTracer::RayTracer()
 {
 }
@@ -14,8 +13,47 @@ RayTracer::~RayTracer()
 glm::vec3 RayTracer::TraceRay(Ray _ray)
 {
 	glm::vec3 pix = glm::vec3(1.0, 0.0, 0.0);
+	//go through all objects in scene 
 
-	return pix;
+	Collision check;
+	Sphere obj;
+	float distHold = 999;
+	bool col = false;
+	for (std::vector<Sphere>::iterator it = std::begin(objectArray); it != std::end(objectArray); it++)
+	{
+		check = SphereIntersection(_ray, it->GetCentre(), it->GetRadius());
+
+
+		if (check.GetCollided() == true)
+		{
+
+			//std::cout << "collided correctly" << std::endl;
+			col = true;
+
+			if (check.GetCollisionDist() < distHold)
+			{
+				distHold = check.GetCollisionDist();
+				obj = *it;
+
+				//std::cout << "smallest dist object found" << std::endl;
+			}
+		}
+		else
+		{
+			//std::cout << "not collided" << std::endl;
+		}
+	}
+
+	if (col == true)
+	{
+
+		return obj.ShadePixel(_ray);
+	}
+	else
+	{
+		//std::cout << "returning background color" << std::endl;
+		return glm::vec3(0.0f, 0.0f, 0.0f);
+	}
 }
 
 glm::vec3 RayTracer::ClosestPoint(Ray _ray, glm::vec3 _point)
@@ -24,17 +62,19 @@ glm::vec3 RayTracer::ClosestPoint(Ray _ray, glm::vec3 _point)
 	return temp;
 }
 
-Collision RayTracer::SphereIntersection(Ray _ray, glm::vec3 _centre, int _radius)
+Collision RayTracer::SphereIntersection(Ray _ray, glm::vec3 _centre, float _radius)
 {
 	Collision sphereCol;
 	bool isCollided = false;
 
+
+
 	//Check if ray origin is inside sphere
-	float radiusCheck = vec3dist(_ray.origin, _centre);
-	if (radiusCheck <= _radius)
+	if (glm::distance(_ray.origin, _centre) <= _radius)
 	{
 		isCollided = false;
 		std::cout << "ERROR: Ray origin within circle" << std::endl;
+		sphereCol.setCollided(false);
 		return sphereCol;
 	}
 	//Find closest point on ray to centre of sphere
@@ -52,15 +92,34 @@ Collision RayTracer::SphereIntersection(Ray _ray, glm::vec3 _centre, int _radius
 	//Work out distance from closes point to sphere centre (D)
 
 	//vector between centre point and closest point.
-	glm::vec3 dVec = _centre - _ray.origin - (dot((_centre - _ray.origin), _ray.direction)*_ray.direction);
+	glm::vec3 OriginToCentre = _centre - _ray.origin;
+
+	glm::vec3 ClosestPointToCentre = (glm::dot(OriginToCentre, _ray.direction)*_ray.direction);
+
+	glm::vec3 XToCentre = _centre - _ray.origin - ClosestPointToCentre;
+
 	//length of vector between centre and closest point X )
-	float d = sqrt((dVec.x*dVec.x) + (dVec.y*dVec.y) + (dVec.z*dVec.z));
+	float d = glm::length(XToCentre);
+
+
+	//std::cout << d << std::endl;
+	if (d > _radius)
+	{
+
+		sphereCol.setCollided(false);
+		return sphereCol;
+	}
+	else
+	{
+		//std::cout << "Collision found!" << std::endl;
+	}
 
 	//distance between collision point and closest point
 	float x = sqrt((_radius*_radius) - (d*d));
 
+
 	//first point of intersection (3d vec) 
-	glm::vec3 col = _ray.origin*(((dot((_centre - _ray.origin), _ray.direction)) - x)*_ray.direction);
+	glm::vec3 col = _ray.origin*(((glm::dot((_centre - _ray.origin), _ray.direction)) - x)*_ray.direction);
 
 	float collisionDist = glm::length(col - _ray.origin);
 	sphereCol.setCollided(true);
@@ -68,18 +127,11 @@ Collision RayTracer::SphereIntersection(Ray _ray, glm::vec3 _centre, int _radius
 	sphereCol.setCollisionDistance(collisionDist);
 	return sphereCol;
 }
-
-float RayTracer::dot(glm::vec3 _v1, glm::vec3 _v2)
+void RayTracer::AddSphereToScene(glm::vec3 _coordinate, float _radius)
 {
-	return (_v1.x*_v2.x) + (_v1.y*_v2.y) + (_v1.z*_v2.z);
-}
-
-float RayTracer::pythag(float _radius, float _distance)
-{
-	return sqrt((pow(_radius, 2) - pow(_distance, 2)));
-}
-
-float RayTracer::vec3dist(glm::vec3 p1, glm::vec3 p2)
-{
-	return glm::length(p1 - p2);
+	Sphere sphere;
+	sphere.SetCentre(_coordinate);
+	sphere.SetRadius(_radius);
+	objectArray.push_back(sphere);
+	std::cout << "Sphere added?" << std::endl;
 }

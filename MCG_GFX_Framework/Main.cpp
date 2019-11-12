@@ -7,8 +7,8 @@
 #include "Ray.h"
 #include "RayTracer.h"
 
-int windowX = 100;
-int windowY = 100;
+int windowX = 500;
+int windowY = 500;
 int main( int argc, char *argv[] )
 {
 	// Variable for storing window dimensions
@@ -57,26 +57,26 @@ int main( int argc, char *argv[] )
 		//MCG::DrawPixel( pixelPosition, pixelColour );
 
 		//Creation of camera object
-		Camera camera;
+		Camera camera(glm::vec2(windowX, windowY));
 		Ray currentRay;
 		RayTracer tracer;
 		glm::ivec2 pixelPosition;
 		glm::ivec2 queryPoint = windowSize / 2;
 
+		tracer.AddSphereToScene(glm::vec3(0.0f, 0.0f, 50.0), 20.0f);
 
-
+		//tracer.AddSphereToScene(glm::vec3(50.0f, 50.0f, 11.0f), 10.0f);
 		//Iterate through every pixel on the screen.
 		for (int x_coord = 0; x_coord <= windowX; x_coord++)
 		{
 			for (int y_coord = 0; y_coord <= windowY; y_coord++)
 			{
-				std::cout << "Pixel: " << "(" << x_coord << "," << y_coord << ")" << std::endl;
+				//std::cout << "Pixel: " << "(" << x_coord << "," << y_coord << ")" << std::endl;
 				pixelPosition =  glm::ivec2(x_coord, y_coord);
 				currentRay = camera.CalculateRay(pixelPosition);
 				pixelColour = tracer.TraceRay(currentRay);
 				pixelColour = pixelColour * 255;
 				MCG::DrawPixel(pixelPosition, pixelColour);
-
 			}
 		}
 		return MCG::ShowAndHold();
