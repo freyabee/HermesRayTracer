@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "MCG_GFX_Lib.h"
-
+#include <mutex>
 
 namespace MCG
 {
@@ -12,6 +12,7 @@ namespace MCG
 	SDL_Window *_window;
 	glm::ivec2 _winSize;
 	unsigned int _lastTime;
+	std::mutex mtx;
 }
 
 
@@ -87,10 +88,13 @@ void MCG::SetBackground( glm::ivec3 colour )
 
 void MCG::DrawPixel( glm::ivec2 position, glm::ivec3 colour )
 {
+
+	mtx.lock();
 	// Set the colour for drawing
 	SDL_SetRenderDrawColor( _renderer, colour.r, colour.g, colour.b, 255 );
 	// Draw our pixel
 	SDL_RenderDrawPoint( _renderer, position.x, position.y );
+	mtx.unlock();
 }
 
 
