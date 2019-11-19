@@ -1,6 +1,10 @@
 #pragma once
 #include "MCG_GFX_Lib.h"
 #include "Ray.h"
+#include "Collision.h"
+#include <algorithm>
+#include <iostream>
+
 class Sphere
 {
 private:
@@ -10,7 +14,7 @@ private:
 public:
 	Sphere();
 	~Sphere();
-	glm::vec3 ShadePixel(Ray _ray);
+	glm::vec3 ShadePixel(Ray _ray, Collision _col);
 	void SetCentre(glm::vec3 _centre);
 	void SetRadius(float _radius);
 

@@ -11,14 +11,24 @@ Sphere::~Sphere()
 {
 }
 
-glm::vec3 Sphere::ShadePixel(Ray _ray)
+glm::vec3 Sphere::ShadePixel(Ray _ray, Collision _col)
 {
 	/*
-	Function that shades pixel and returns pixel color in vec3
+	TODO: Function that shades pixel and returns pixel color in vec3
 	*/
 
-	pixelColour = glm::vec3(1.0, 0.0, 0.0);
-	return pixelColour;
+	glm::vec3 surfaceNormal = (_col.GetCollisionPoint() - centre) * (1.0f/radius);
+
+	glm::vec3 normdir= (-_ray.direction);
+
+
+	float hitColor = glm::max(glm::dot(surfaceNormal, normdir),0.0f);
+	//std::cout << hitColor << std::endl;
+	pixelColour = glm::vec3(0.9f, 0.0, 0.0);
+
+	glm::vec3 color = pixelColour * (hitColor);
+
+	return (color);
 }
 
 void Sphere::SetCentre(glm::vec3 _centre)

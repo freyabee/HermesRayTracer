@@ -1,5 +1,5 @@
 #include "RayTracer.h"
-
+#include <memory>
 
 RayTracer::RayTracer()
 {
@@ -47,7 +47,7 @@ glm::vec3 RayTracer::TraceRay(Ray _ray)
 	if (col == true)
 	{
 
-		return obj.ShadePixel(_ray);
+		return obj.ShadePixel(_ray, check);
 	}
 	else
 	{
@@ -102,16 +102,14 @@ Collision RayTracer::SphereIntersection(Ray _ray, glm::vec3 _centre, float _radi
 	float d = glm::length(XToCentre);
 
 
-	//std::cout << d << std::endl;
+	
 	if (d > _radius)
 	{
-
 		sphereCol.setCollided(false);
 		return sphereCol;
 	}
 	else
 	{
-		//std::cout << "Collision found!" << std::endl;
 	}
 
 	//distance between collision point and closest point
@@ -119,7 +117,7 @@ Collision RayTracer::SphereIntersection(Ray _ray, glm::vec3 _centre, float _radi
 
 
 	//first point of intersection (3d vec) 
-	glm::vec3 col = _ray.origin*(((glm::dot((_centre - _ray.origin), _ray.direction)) - x)*_ray.direction);
+	glm::vec3 col = _ray.origin+(((glm::dot((_centre - _ray.origin), _ray.direction)) - x)*_ray.direction);
 
 	float collisionDist = glm::length(col - _ray.origin);
 	sphereCol.setCollided(true);
@@ -134,4 +132,9 @@ void RayTracer::AddSphereToScene(glm::vec3 _coordinate, float _radius)
 	sphere.SetRadius(_radius);
 	objectArray.push_back(sphere);
 	std::cout << "Sphere added?" << std::endl;
+}
+
+void RayTracer::AddLightToScene(glm::vec3 _coordinate, float _radius)
+{
+
 }
