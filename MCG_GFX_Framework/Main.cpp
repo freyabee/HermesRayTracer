@@ -103,7 +103,7 @@ int main( int argc, char *argv[] )
 		int num_blocks_x = windowY / block_size;
 
 
-		/*
+		
 		for (int y = 0; y <= num_blocks_y; y++)
 		{
 			for (int x = 0; x < num_blocks_x; x = x + 2)
@@ -114,7 +114,7 @@ int main( int argc, char *argv[] )
 				second.join();
 			}
 		}
-		*/
+		
 		
 		
 
