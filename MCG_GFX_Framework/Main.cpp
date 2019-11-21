@@ -33,6 +33,20 @@ void RayTraceCoord(glm::ivec2 block, RayTracer _tracer, Camera _camera, glm::vec
 	
 }
 
+
+//TODO HAVE A LOOK AT THIS https://ncona.com/2019/05/using-thread-pools-in-cpp/
+
+
+struct Input
+{
+	glm::ivec2 coord;
+	RayTracer tracer;
+	Camera camera;
+	glm::ivec3 pixelColour;
+	int block_size;
+
+};
+
 int main( int argc, char *argv[] )
 {
 	// Variable for storing window dimensions
@@ -74,36 +88,21 @@ int main( int argc, char *argv[] )
 
 		//Creation of camera object
 		Camera camera(glm::vec2(windowX, windowY));
+
+
+		
 		Ray currentRay;
 		RayTracer tracer;
 		glm::ivec2 pixelPosition;
 
-
 		tracer.AddSphereToScene(glm::vec3(0.0f, 0.0f, -100.0), 20.0f);
-		/*
-		for (int x_coord = 0; x_coord <= windowX; x_coord++)
-		{
-			for (int y_coord = 0; y_coord <= windowY; y_coord++)
-			{
-				pixelPosition =  glm::ivec2(x_coord, y_coord);
 
-				currentRay = camera.CalculateRay(pixelPosition);
-				pixelColour = tracer.TraceRay(currentRay);
-
-
-				pixelColour = pixelColour * glm::vec3(255);
-				MCG::DrawPixel(pixelPosition, pixelColour);
-			}
-		}
-		*/
 		int block_size = 10;
-
-		int parts = 2;
-		int num_blocks_y = windowX / block_size;
-		int num_blocks_x = windowY / block_size;
-
-
+		int parts = 8;
+		glm::ivec2 numblocks(windowX / block_size, windowY / block_size);
+		/*
 		
+		OLD IMPLEMENTATION
 		for (int y = 0; y <= num_blocks_y; y++)
 		{
 			for (int x = 0; x < num_blocks_x; x = x + 2)
@@ -114,7 +113,27 @@ int main( int argc, char *argv[] )
 				second.join();
 			}
 		}
-		
+		*/
+
+		int max_threads = std::thread::hardware_concurrency(); //Retrieve maximum number of threads supported
+		std::cout << max_threads << std::endl;
+
+
+		std::vector<std::thread> pool;
+
+		for(int i =0; i)
+
+
+		for (int y = 0; y <= numblocks.y; y++)
+		{
+			for (int x = 0; x < numblocks.x; x=x+parts)
+			{
+				for (int i=0; i<=parts; i++)
+				{
+
+				}
+			}
+		}
 		
 		
 
