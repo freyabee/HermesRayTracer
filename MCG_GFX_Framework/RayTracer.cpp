@@ -12,48 +12,143 @@ RayTracer::~RayTracer()
 
 glm::vec3 RayTracer::TraceRay(Ray _ray)
 {
-	glm::vec3 pix = glm::vec3(1.0, 0.0, 0.0);
 	//go through all objects in scene 
+	
 
-	Collision check;
-	Sphere obj;
-	float distHold = 999;
+	float distHold = 9999;
 	bool col = false;
-	for (std::vector<Sphere>::iterator it = std::begin(objectArray); it != std::end(objectArray); it++)
+	Collision check;
+
+	std::vector<Collision> collisions;
+	std::vector<int> collidedElements;
+
+	bool collided = false;
+	for (int i = 0; i < objectArray.size(); i++)
 	{
-		check = SphereIntersection(_ray, it->GetCentre(), it->GetRadius());
 
-
+		check = SphereIntersection(_ray, objectArray[i].GetCentre(), objectArray[i].GetRadius());
 		if (check.GetCollided() == true)
 		{
+			collidedElements.push_back(i);
+			collisions.push_back(check);
+		}
+	}
 
-			//std::cout << "collided correctly" << std::endl;
+
+	if (collisions.size() > 0)
+	{
+		int element;
+		float smallestDist;
+
+
+		for (int i = 0; i < collisions.size(); i++)
+		{
+			if (i == 0)
+			{
+				smallestDist = collisions[i].GetCollisionDist();
+				element = i;
+			}
+			else
+			{
+				if (smallestDist > collisions[i].GetCollisionDist())
+				{
+					smallestDist = collisions[i].GetCollisionDist();
+					element = i;
+				}
+			}
+
+		}
+
+
+		return objectArray[collidedElements[element]].ShadePixel(_ray, collisions[element]);
+
+	}
+
+
+
+
+
+
+
+	
+	
+	if (collided==true)
+	{
+		float dist = 999;
+		int closestObj = NULL;
+
+		for (int i = 0; i < collisions.size(); i++)
+		{
+			if (collisions[i].GetCollided() == true)
+			{
+				
+				
+
+				if (i == 0)
+				{
+					dist = collisions[i].GetCollisionDist();
+					closestObj = i;
+				}
+				else
+				{
+					if (dist > collisions[i].GetCollisionDist())
+					{
+						dist = collisions[i].GetCollisionDist();
+						closestObj = i;
+					}
+				}
+
+
+				
+			}
+		}
+
+		if (closestObj != NULL)
+		{
+			return objectArray[closestObj].ShadePixel(_ray, check);
+		}
+		
+
+	}
+
+	return glm::vec3(0.0f, 0.0f, 0.0f);
+	
+	
+
+	
+
+
+
+
+	Sphere obj;
+	//Collision check;
+
+	/*
+	for (std::vector<Sphere>::iterator it = std::begin(objectArray); it != std::end(objectArray); it++)
+	{
+		//for each object check if the ray colliders
+		Collision check = SphereIntersection(_ray, it->GetCentre(), it->GetRadius());
+
+		//if the ray collides
+		if (check.GetCollided() == true)
+		{
 			col = true;
-
 			if (check.GetCollisionDist() < distHold)
 			{
 				distHold = check.GetCollisionDist();
 				obj = *it;
-
-				//std::cout << "smallest dist object found" << std::endl;
 			}
-		}
-		else
-		{
-			//std::cout << "not collided" << std::endl;
+			
 		}
 	}
-
-	if (col == true)
+	if (col)
 	{
-
 		return obj.ShadePixel(_ray, check);
 	}
-	else
-	{
-		//std::cout << "returning background color" << std::endl;
-		return glm::vec3(0.0f, 0.0f, 0.0f);
-	}
+
+	
+	*/
+	
 }
 
 glm::vec3 RayTracer::ClosestPoint(Ray _ray, glm::vec3 _point)
@@ -131,7 +226,7 @@ void RayTracer::AddSphereToScene(glm::vec3 _coordinate, float _radius)
 	sphere.SetCentre(_coordinate);
 	sphere.SetRadius(_radius);
 	objectArray.push_back(sphere);
-	std::cout << "Sphere added?" << std::endl;
+	std::cout << "Sphere added." << std::endl;
 }
 
 void RayTracer::AddLightToScene(glm::vec3 _coordinate, float _radius)

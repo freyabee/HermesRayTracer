@@ -1,0 +1,109 @@
+	// Variable for storing window dimensions
+	glm::ivec2 windowSize( windowX, windowY );
+
+	// Call MCG::Init to initialise and create your window
+	// Tell it what size you want the window to be
+	if( !MCG::Init( windowSize ) )
+	{
+		// We must check if something went wrong
+		// (this is very unlikely)
+		return -1;
+	}
+
+	// Sets every pixel to the same colour
+	MCG::SetBackground( glm::ivec3(0,0,0) );
+
+	// Preparing a position to draw a pixel
+	glm::ivec2 pixelPosition = windowSize / 2;
+
+	// Preparing a colour to draw
+	glm::vec3 pixelColour( 1, 0, 0 );
+
+
+	// Draws a single pixel at the specified coordinates in the specified colour!
+	//
+
+	// Displays drawing to screen and holds until user closes window
+	// You must call this after all your drawing calls
+	// Program will exit after this line
+	
+
+	float timer = 0.0f;
+
+
+while( MCG::ProcessFrame() )
+	{
+		// Set every pixel to the same colour
+		MCG::SetBackground( glm::ivec3( 0, 0, 0 ) );
+
+		//Creation of camera object
+		Camera camera(glm::vec2(windowX, windowY));
+
+
+		
+		Ray currentRay;
+		RayTracer tracer;
+		glm::ivec2 pixelPosition;
+
+		tracer.AddSphereToScene(glm::vec3(0.0f, 0.0f, -100.0), 20.0f);
+		/*
+		int block_size = 10;
+		int parts = 8;
+		glm::ivec2 numblocks(windowX / block_size, windowY / block_size);
+		*/
+
+		/*
+		
+		OLD IMPLEMENTATION
+		for (int y = 0; y <= num_blocks_y; y++)
+		{
+			for (int x = 0; x < num_blocks_x; x = x + 2)
+			{
+				std::thread first(RayTraceCoord, glm::ivec2(x,y), tracer, camera, pixelColour, block_size);
+				std::thread second(RayTraceCoord, glm::ivec2(x+1,y), tracer, camera, pixelColour, block_size);
+				first.join();
+				second.join();
+			}
+		}
+		*/
+
+		int max_threads = std::thread::hardware_concurrency(); //Retrieve maximum number of threads supported
+		std::cout << max_threads << std::endl;
+
+
+		std::vector<std::thread> pool;
+
+
+		for (int y = 0; y <= numblocks.y; y++)
+		{
+			for (int x = 0; x < numblocks.x; x=x+parts)
+			{
+				for (int i=0; i<=parts; i++)
+				{
+
+				}
+			}
+		}
+
+		std::cout << "Render fin" << std::endl;
+		return MCG::ShowAndHold();
+		
+	}
+
+
+
+
+			/*
+
+		OLD IMPLEMENTATION
+		for (int y = 0; y <= num_blocks_y; y++)
+		{
+		for (int x = 0; x < num_blocks_x; x = x + 2)
+		{
+		std::thread first(RayTraceCoord, glm::ivec2(x,y), tracer, camera, pixelColour, block_size);
+		std::thread second(RayTraceCoord, glm::ivec2(x+1,y), tracer, camera, pixelColour, block_size);
+		first.join();
+		second.join();
+		}
+		}
+		*/

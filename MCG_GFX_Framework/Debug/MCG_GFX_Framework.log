@@ -1,20 +1,5 @@
-﻿  Camera.cpp
-c:\users\s4921584\hermesraytracer\mcg_gfx_framework\camera.cpp(7): warning C4244: '=': conversion from 'T' to 'int', possible loss of data
-          with
-          [
-              T=float
-          ]
-c:\users\s4921584\hermesraytracer\mcg_gfx_framework\camera.cpp(8): warning C4244: '=': conversion from 'T' to 'int', possible loss of data
-          with
-          [
-              T=float
-          ]
-  Collision.cpp
-  Light.cpp
-  Main.cpp
-  MCG_GFX_Lib.cpp
-  Ray.cpp
-  RayTracer.cpp
-  Sphere.cpp
-  Generating Code...
-  MCG_GFX_Framework.vcxproj -> C:\Users\s4921584\HermesRayTracer\Debug\MCG_GFX_Framework.exe
+﻿  RayTracer.cpp
+c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\raytracer.cpp(26): warning C4018: '<': signed/unsigned mismatch
+c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\raytracer.cpp(44): warning C4018: '<': signed/unsigned mismatch
+c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\raytracer.cpp(80): warning C4018: '<': signed/unsigned mismatch
+  MCG_GFX_Framework.vcxproj -> C:\Users\Freya\Desktop\Ray Tracer\HermesRayTracer\Debug\MCG_GFX_Framework.exe
