@@ -153,6 +153,7 @@
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MCG_GFX_Lib.cpp" />
+    <ClCompile Include="Object.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="RayTracer.cpp" />
     <ClCompile Include="Sphere.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="MCG_GFX_Lib.h" />
+    <ClInclude Include="Object.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RayTracer.h" />
     <ClInclude Include="Sphere.h" />

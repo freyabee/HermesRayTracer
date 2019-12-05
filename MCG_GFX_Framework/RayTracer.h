@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include "Sphere.h"
+#include "Light.h"
 
 
 class RayTracer
@@ -21,7 +22,9 @@ public:
 	// Gets closest point on a line
 	glm::vec3 ClosestPoint(Ray _ray, glm::vec3 _point);
 	Collision SphereIntersection(Ray _ray, glm::vec3 _centre, float _radius);
-	std::vector<Sphere> objectArray;
+
+
+	std::vector<std::shared_ptr<Sphere>> objectArray;
 
 	void AddSphereToScene(glm::vec3 _coordinate, float _radius);
 	void AddLightToScene(glm::vec3 _coordinate, float _radius);

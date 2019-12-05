@@ -26,7 +26,7 @@ glm::vec3 RayTracer::TraceRay(Ray _ray)
 	for (int i = 0; i < objectArray.size(); i++)
 	{
 
-		check = SphereIntersection(_ray, objectArray[i].GetCentre(), objectArray[i].GetRadius());
+		check = SphereIntersection(_ray, objectArray.at(i)->GetCentre(), objectArray.at(i)->GetRadius());
 		if (check.GetCollided() == true)
 		{
 			collidedElements.push_back(i);
@@ -60,10 +60,10 @@ glm::vec3 RayTracer::TraceRay(Ray _ray)
 		}
 
 
-		return objectArray[collidedElements[element]].ShadePixel(_ray, collisions[element]);
+		return objectArray[collidedElements[element]]->ShadePixel(_ray, collisions[element]);
 
 	}
-
+	
 
 
 
@@ -105,49 +105,13 @@ glm::vec3 RayTracer::TraceRay(Ray _ray)
 
 		if (closestObj != NULL)
 		{
-			return objectArray[closestObj].ShadePixel(_ray, check);
+			return objectArray[closestObj]->ShadePixel(_ray, check);
 		}
 		
 
 	}
 
 	return glm::vec3(0.0f, 0.0f, 0.0f);
-	
-	
-
-	
-
-
-
-
-	Sphere obj;
-	//Collision check;
-
-	/*
-	for (std::vector<Sphere>::iterator it = std::begin(objectArray); it != std::end(objectArray); it++)
-	{
-		//for each object check if the ray colliders
-		Collision check = SphereIntersection(_ray, it->GetCentre(), it->GetRadius());
-
-		//if the ray collides
-		if (check.GetCollided() == true)
-		{
-			col = true;
-			if (check.GetCollisionDist() < distHold)
-			{
-				distHold = check.GetCollisionDist();
-				obj = *it;
-			}
-			
-		}
-	}
-	if (col)
-	{
-		return obj.ShadePixel(_ray, check);
-	}
-
-	
-	*/
 	
 }
 
@@ -222,14 +186,18 @@ Collision RayTracer::SphereIntersection(Ray _ray, glm::vec3 _centre, float _radi
 }
 void RayTracer::AddSphereToScene(glm::vec3 _coordinate, float _radius)
 {
-	Sphere sphere;
-	sphere.SetCentre(_coordinate);
-	sphere.SetRadius(_radius);
+	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>();
+	sphere->SetCentre(_coordinate);
+	sphere->SetRadius(_radius);
 	objectArray.push_back(sphere);
 	std::cout << "Sphere added." << std::endl;
 }
 
 void RayTracer::AddLightToScene(glm::vec3 _coordinate, float _radius)
 {
-
+	std::shared_ptr<Light> light = std::make_shared<Light>();
+	light->SetCentre(_coordinate);
+	light->SetRadius(_radius);
+	objectArray.push_back(std::move(light));
+	std::cout << "Light added." << std::endl;
 }

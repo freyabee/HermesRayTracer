@@ -4,6 +4,7 @@
 #include "Collision.h"
 #include <algorithm>
 #include <iostream>
+#include "Object.h"
 
 class Sphere
 {
@@ -13,12 +14,11 @@ private:
 	float radius;
 public:
 	Sphere();
-	~Sphere();
-	glm::vec3 ShadePixel(Ray _ray, Collision _col);
-	void SetCentre(glm::vec3 _centre);
-	void SetRadius(float _radius);
-
-	glm::vec3 GetCentre();
-	float GetRadius();
+	virtual ~Sphere();
+	virtual glm::vec3 ShadePixel(Ray _ray, Collision _col);
+	virtual void SetCentre(glm::vec3 _centre);
+	virtual void SetRadius(float _radius);
+	virtual glm::vec3 GetCentre();
+	virtual float GetRadius();
 };
 

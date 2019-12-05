@@ -1,5 +1,3 @@
-﻿  RayTracer.cpp
-c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\raytracer.cpp(26): warning C4018: '<': signed/unsigned mismatch
-c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\raytracer.cpp(44): warning C4018: '<': signed/unsigned mismatch
-c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\raytracer.cpp(80): warning C4018: '<': signed/unsigned mismatch
+﻿  Main.cpp
+c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\main.cpp(39): warning C4101: 'e': unreferenced local variable
   MCG_GFX_Framework.vcxproj -> C:\Users\Freya\Desktop\Ray Tracer\HermesRayTracer\Debug\MCG_GFX_Framework.exe

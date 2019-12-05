@@ -124,7 +124,7 @@ int main( int argc, char *argv[] )
 
 		//add sphere to screen
 		tracer.AddSphereToScene(glm::vec3(20.0f, 0.0f, -100.0), 15.0f);
-		tracer.AddSphereToScene(glm::vec3(-20.0f, 0.0f, -100.0), 10.0f);
+		tracer.AddLightToScene(glm::vec3(-10.0f, 0.0f, -100.0), 10.0f);
 		
 		/*TIMER INIT*/
 		Timer t;

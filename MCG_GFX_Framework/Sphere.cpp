@@ -6,7 +6,6 @@ Sphere::Sphere()
 {
 }
 
-
 Sphere::~Sphere()
 {
 }
