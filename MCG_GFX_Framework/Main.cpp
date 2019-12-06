@@ -9,7 +9,7 @@
 #include "RayTracer.h"
 #include "ThreadPool.h"
 #include "Timer.h"
-
+#include "Material.h"
 
 int windowX = 500;
 int windowY = 500;
@@ -121,18 +121,31 @@ int main( int argc, char *argv[] )
 		//predefine current pixel position
 		glm::ivec2 pixelPosition;
 
+		glm::vec3 planepos(0.0f, -10.0f, 0.f);
+		glm::vec3 planenormal(0.f, -1.f, 0.f);
+		tracer.AddPlaneToScene(planepos, planenormal);
 
+
+		//define materials
+		std::shared_ptr<Material> red = std::make_shared<Material>(glm::vec3(0.18, 0.f, 0.f));
+		std::shared_ptr<Material> blue = std::make_shared<Material>(glm::vec3(0.f, 0.18f, 0.f));
 		//add sphere to screen
-		tracer.AddSphereToScene(glm::vec3(20.0f, 0.0f, -100.0), 15.0f);
-		tracer.AddLightToScene(glm::vec3(-10.0f, 0.0f, -100.0), 10.0f);
+		tracer.AddSphereToScene(glm::vec3(20.0f, 0.0f, -100.0), 15.0f, red);
+		tracer.AddSphereToScene(glm::vec3(-20.0f, 0.0f, -100.0), 15.0f, blue);
+
+
+		glm::vec3 lightDirection(0.f, 1.0f, 0.f);
+		glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+		tracer.AddDirectionalLightToScene(lightColor, lightDirection, 10.0f);
 		
+
 		/*TIMER INIT*/
 		Timer t;
 		t.Start();
 		/* THREAD INIT */
 		//int max_threads = std::thread::hardware_concurrency(); //Retrieve maximum number of threads supported
 		//init thread pool
-		ThreadPool pool{ 32 };
+		ThreadPool pool{ 16 };
 
 		//std::cout << max_threads << std::endl;
 		glm::ivec2 block(0, 0);

@@ -1,7 +1,8 @@
 #pragma once
 #include "MCG_GFX_Lib.h"
-#include "Ray.h"
 #include <iostream>
+
+class Ray;
 
 class Camera
 {

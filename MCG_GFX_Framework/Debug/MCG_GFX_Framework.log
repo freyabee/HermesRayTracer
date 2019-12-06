@@ -1,3 +1,2 @@
-﻿  Main.cpp
-c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\main.cpp(39): warning C4101: 'e': unreferenced local variable
-  MCG_GFX_Framework.vcxproj -> C:\Users\Freya\Desktop\Ray Tracer\HermesRayTracer\Debug\MCG_GFX_Framework.exe
+﻿  Plane.cpp
+  MCG_GFX_Framework.vcxproj -> C:\Users\s4921584\temp\HermesRayTracer\Debug\MCG_GFX_Framework.exe

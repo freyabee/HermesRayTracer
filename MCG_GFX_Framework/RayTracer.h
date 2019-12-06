@@ -1,13 +1,16 @@
 #pragma once
 #include <memory>
 #include "MCG_GFX_Lib.h"
-#include "Ray.h"
-#include "Collision.h"
 #include <iostream>
 #include <vector>
-#include "Sphere.h"
-#include "Light.h"
 
+class Sphere;
+class Collision;
+class DirectionalLight;
+class Ray;
+class Plane;
+class Material;
+class Object;
 
 class RayTracer
 {
@@ -24,10 +27,13 @@ public:
 	Collision SphereIntersection(Ray _ray, glm::vec3 _centre, float _radius);
 
 
-	std::vector<std::shared_ptr<Sphere>> objectArray;
-
-	void AddSphereToScene(glm::vec3 _coordinate, float _radius);
+	std::vector<std::shared_ptr<Object>> objectArray;
+	std::vector<std::shared_ptr<DirectionalLight>> dlArray;
+	std::vector<std::shared_ptr<Plane>> planeArray;
+	
+	void AddSphereToScene(glm::vec3 _coordinate, float _radius, std::shared_ptr<Material>);
 	void AddLightToScene(glm::vec3 _coordinate, float _radius);
-
+	void AddDirectionalLightToScene(glm::vec3 _coordinate, glm::vec3 _direction, float intensity);
+	void AddPlaneToScene(glm::vec3 _coordinate, glm::vec3 _normal);
 };
 
