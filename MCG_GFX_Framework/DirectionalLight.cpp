@@ -28,11 +28,6 @@ void DirectionalLight::SetDirection(glm::vec3 _direction)
 	direction = _direction;
 }
 
-void DirectionalLight::SetCoordinate(glm::vec3 _coordinate)
-{
-	coordinate = _coordinate;
-}
-
 void DirectionalLight::SetColor(glm::vec3 _color)
 {
 	color = _color;
@@ -45,12 +40,7 @@ float DirectionalLight::GetIntensity()
 
 glm::vec3 DirectionalLight::GetDirection()
 {
-	return direction;
-}
-
-glm::vec3 DirectionalLight::GetCoordinate()
-{
-	return coordinate;
+	return glm::normalize(direction);
 }
 
 glm::vec3 DirectionalLight::GetColor()

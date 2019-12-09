@@ -2,7 +2,7 @@
 #include "Ray.h"
 #include "Collision.h"
 #include "DirectionalLight.h"
-
+#include "Material.h"
 
 Object::Object()
 {
@@ -19,7 +19,7 @@ Collision Object::Intersection(Ray _ray)
 }
 
 
-glm::vec3 Object::DiffuseShader(Ray _ray, Collision _col, std::shared_ptr<DirectionalLight> light)
+glm::vec3 Object::DiffuseShader(Ray _ray, Collision _col, std::shared_ptr<DirectionalLight> light, bool inShadow)
 {
 	return glm::vec3();
 }

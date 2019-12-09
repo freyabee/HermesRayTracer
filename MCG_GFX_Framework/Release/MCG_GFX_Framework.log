@@ -1,1 +1,20 @@
-﻿  MCG_GFX_Framework.vcxproj -> C:\Users\s4921584\temp\HermesRayTracer\Release\MCG_GFX_Framework.exe
+﻿  DirectionalLight.cpp
+  Light.cpp
+  Main.cpp
+c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\raytracer.h(20): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\main.cpp(39): warning C4101: 'e': unreferenced local variable
+  Material.cpp
+  Object.cpp
+  Plane.cpp
+  RayTracer.cpp
+c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\raytracer.h(20): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\raytracer.cpp(31): warning C4018: '<': signed/unsigned mismatch
+c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\raytracer.cpp(49): warning C4018: '<': signed/unsigned mismatch
+c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\raytracer.cpp(120): warning C4018: '<': signed/unsigned mismatch
+  Sphere.cpp
+  Generating code
+  142 of 949 functions (15.0%) were compiled, the rest were copied from previous compilation.
+    31 functions were new in current compilation
+    74 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  MCG_GFX_Framework.vcxproj -> C:\Users\Freya\Desktop\Ray Tracer\HermesRayTracer\Release\MCG_GFX_Framework.exe

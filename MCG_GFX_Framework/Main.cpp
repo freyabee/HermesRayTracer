@@ -17,7 +17,7 @@ int windowY = 500;
 
 
 
-void RayTraceCoord(glm::ivec2 block, RayTracer _tracer, Camera _camera, glm::vec3 _pixelColour, glm::ivec2 blockSizes)
+void RayTraceCoord(glm::ivec2 block, RayTracer _tracer, std::shared_ptr<Camera> _camera, glm::vec3 _pixelColour, glm::ivec2 blockSizes)
 {
 	glm::ivec2 _start_point = glm::ivec2(block.x*blockSizes.x, block.y*blockSizes.y);
 
@@ -28,7 +28,7 @@ void RayTraceCoord(glm::ivec2 block, RayTracer _tracer, Camera _camera, glm::vec
 			
 			glm::ivec2 _pixelPosition = glm::ivec2(x, y);
 			
-			Ray currentRay = _camera.CalculateRay(_pixelPosition);
+			Ray currentRay = _camera->CalculateRay(_pixelPosition);
 			_pixelColour = _tracer.TraceRay(currentRay);
 			_pixelColour = _pixelColour * glm::vec3(255);
 
@@ -40,32 +40,9 @@ void RayTraceCoord(glm::ivec2 block, RayTracer _tracer, Camera _camera, glm::vec
 			{
 				std::cout << "Error occured at print pixel" << std::endl;
 			}
-
-			
 		}
 	}
-	//std::cout << "drawn block " << block.x <<","<< block.y << std::endl;
 }
-
-void TestFunction(int xCoord, int yCoord)
-{
-	std::cout << xCoord << ", " << yCoord << std::endl;
-}
-
-
-//TODO HAVE A LOOK AT THIS https://ncona.com/2019/05/using-thread-pools-in-cpp/
-
-
-
-struct Input
-{
-	glm::ivec2 coord;
-	RayTracer tracer;
-	Camera camera;
-	glm::ivec3 pixelColour;
-	int block_size;
-
-};
 
 int main( int argc, char *argv[] )
 {
@@ -111,7 +88,7 @@ int main( int argc, char *argv[] )
 		MCG::SetBackground(glm::ivec3(0, 0, 0));
 
 		//Creation of camera object
-		Camera camera(glm::vec2(windowX, windowY));
+		std::shared_ptr<Camera> camera = std::make_shared<Camera>(glm::vec2(windowX, windowY));
 
 
 		//define ray class
@@ -121,20 +98,41 @@ int main( int argc, char *argv[] )
 		//predefine current pixel position
 		glm::ivec2 pixelPosition;
 
-		glm::vec3 planepos(0.0f, -10.0f, 0.f);
-		glm::vec3 planenormal(0.f, -1.f, 0.f);
-		tracer.AddPlaneToScene(planepos, planenormal);
-
 
 		//define materials
+		std::shared_ptr<Material> pink = std::make_shared<Material>(glm::vec3(0.18f, 0.6, 0.8f));
 		std::shared_ptr<Material> red = std::make_shared<Material>(glm::vec3(0.18, 0.f, 0.f));
-		std::shared_ptr<Material> blue = std::make_shared<Material>(glm::vec3(0.f, 0.18f, 0.f));
+		std::shared_ptr<Material> green = std::make_shared<Material>(glm::vec3(0.f, 0.18f, 0.f));
+		std::shared_ptr<Material> blue = std::make_shared<Material>(glm::vec3(0.f, 0.f, 0.18));
+		std::shared_ptr<Material> mirror = std::make_shared<Material>(true);
+
+
+
+		//Add plane(s)
+		glm::vec3 planepos(0.0f, -20.0f, 0.f);
+		glm::vec3 planenormal(0.f, 1.f, 0.f);
+		//tracer.AddPlaneToScene(planepos, planenormal, pink);
+
+		/*
+		glm::vec3 p2(0.0f, -20.0f, 0.f);
+		glm::vec3 n2(0.f, 0.f, -1.f);
+		tracer.AddPlaneToScene(p2, n2, red);
+
+		glm::vec3 p3(0.0f, -20.0f, 0.f);
+		glm::vec3 n3(-1.f, 0.f, 0.f);
+		tracer.AddPlaneToScene(p3, n3, green);
+		*/
+
+
 		//add sphere to screen
-		tracer.AddSphereToScene(glm::vec3(20.0f, 0.0f, -100.0), 15.0f, red);
-		tracer.AddSphereToScene(glm::vec3(-20.0f, 0.0f, -100.0), 15.0f, blue);
+		//tracer.AddSphereToScene(glm::vec3(-20.0f, 25.0f, -100.0f), 10.0f, green);
+		tracer.AddSphereToScene(glm::vec3(0.0f, 25.0f, -100.0f), 7.0f, green);
+		//tracer.AddSphereToScene(glm::vec3(20.0f, 25.0f, -100.0f), 10.0f, green);
+		tracer.AddSphereToScene(glm::vec3(0.0f, 0.0f, -100.0f), 15.0f, red);
 
 
-		glm::vec3 lightDirection(0.f, 1.0f, 0.f);
+		//directional lighting
+		glm::vec3 lightDirection(0.f, -1.0f, 0.f);
 		glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 		tracer.AddDirectionalLightToScene(lightColor, lightDirection, 10.0f);
 		
@@ -142,8 +140,8 @@ int main( int argc, char *argv[] )
 		/*TIMER INIT*/
 		Timer t;
 		t.Start();
+
 		/* THREAD INIT */
-		//int max_threads = std::thread::hardware_concurrency(); //Retrieve maximum number of threads supported
 		//init thread pool
 		ThreadPool pool{ 16 };
 

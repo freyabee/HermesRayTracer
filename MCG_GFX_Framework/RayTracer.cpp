@@ -5,33 +5,34 @@
 #include "Ray.h"
 #include "DirectionalLight.h"
 #include "Object.h"
+#include "Camera.h"
+#include "Material.h"
+
 RayTracer::RayTracer()
 {
 }
+
 
 
 RayTracer::~RayTracer()
 {
 }
 
-glm::vec3 RayTracer::TraceRay(Ray _ray)
+glm::vec3 RayTracer::TraceRay(Ray _ray, int depth)
 {
-	
-	//go through all objects in scene 
-	
-
-	float distHold = 9999;
-	bool col = false;
 	Collision check;
+
 
 	std::vector<Collision> collisions;
 	std::vector<int> collidedElements;
 
 	bool collided = false;
+
 	for (int i = 0; i < objectArray.size(); i++)
 	{
-		check = objectArray[i]->Intersection(_ray);
-		//check = SphereIntersection(_ray, objectArray.at(i)->GetCentre(), objectArray.at(i)->GetRadius());
+		check = objectArray[i]->SIntersection(_ray);
+		check.SetHitObject(objectArray[i]);
+
 		if (check.GetCollided() == true)
 		{
 			collidedElements.push_back(i);
@@ -64,15 +65,94 @@ glm::vec3 RayTracer::TraceRay(Ray _ray)
 
 		}
 
+		// closest Object and object collision
+		Collision hitCol = collisions[element];
 
 
 
-		return objectArray[collidedElements[element]]->DiffuseShader(_ray, collisions[element], dlArray.at(0));
+		//call raycast for in shadow here
+		
+		
+		//if hit object is mirror
+		if (hitCol.GetHitObject()->GetMaterial()->GetMirror()==true)
+		{
+
+			//cast ray in reflection direction
+			glm::vec3 hitNormal = hitCol.GetCollisionNormal();
+			glm::vec3 reflectionVec = Reflection(_ray.GetDirection(), hitNormal);
+			Ray reflectRay;
+
+			reflectRay.origin = (hitCol.GetCollisionPoint());
+			reflectRay.origin = reflectRay.origin;
+			reflectRay.direction = reflectionVec;
+			return TraceRay(reflectRay, depth + 1);
+
+		}
+
+		/*
+		Collision shadowCol;
+		Ray shadowRay;
+		{
+			
+			//Collision inShadow = GetShadows(collidedElements[element], hitCol, hitCol.GetHitObject());
+			shadowRay.origin = (hitCol.GetCollisionPoint() + hitCol.GetHitObject()->ReturnSurfaceNormal(hitCol)*0.0001f);
+			shadowRay.direction = glm::vec3(0.f, -1.f, 0.f);
+
+			
+			shadowCol.SetCollided(false);
+			for (int i = 0; i < objectArray.size(); i++)
+			{
+				if (objectArray[i]!=hitCol.GetHitObject())
+				{
+					shadowCol = objectArray[i]->Intersection(shadowRay);
+					if (shadowCol.GetCollided() == true)
+					{
+						shadowCol.SetHitObject(objectArray[i]);
+					}
+				}
+			}
+		}
+		*/
+		
+
+
+		//SHADOWS//
+
+		bool shadowed = false;
+		Ray sRay;
+		sRay.origin = hitCol.GetCollisionPoint();
+		sRay.direction = glm::vec3(0.0f, 1.0f, 0.0f);
+
+
+		Collision sCol;
+		for (int i = 0; i < objectArray.size(); i++)
+		{
+			if (objectArray[i] != hitCol.GetHitObject())
+			{
+				sCol = objectArray[i]->SIntersection(sRay);
+
+				if (sCol.GetCollided() == true)
+				{
+					shadowed = true;
+				}
+			}
+		}
+		
+		
+		// hitCol.GetHitObject()->NormalShader(_ray, hitCol);
+		//return hitCol.GetHitObject()->DebugShader();
+		
+		
+		return hitCol.GetHitObject()->DiffuseShader(_ray, hitCol, dlArray[0], shadowed);
+
 
 	}
-	return glm::vec3(0.0f, 0.0f, 0.0f);
+	//Else return background
+	return glm::vec3(0.0f, 0.2f, 0.52f);
 	
 }
+
+
 
 glm::vec3 RayTracer::ClosestPoint(Ray _ray, glm::vec3 _point)
 {
@@ -81,70 +161,44 @@ glm::vec3 RayTracer::ClosestPoint(Ray _ray, glm::vec3 _point)
 }
 
 
-Collision RayTracer::SphereIntersection(Ray _ray, glm::vec3 _centre, float _radius)
+
+Collision RayTracer::GetShadows(int element, Collision _col, std::shared_ptr<Object> obj)
 {
-	Collision sphereCol;
-	bool isCollided = false;
+	Collision shadowCol;
+	Ray shadowRay;
 
 
+	shadowRay.origin = (_col.GetCollisionPoint() + (obj->ReturnSurfaceNormal(_col)));
+	shadowRay.direction = glm::vec3(0.f, 1.f, 0.f);
 
-	//Check if ray origin is inside sphere
-	if (glm::distance(_ray.origin, _centre) <= _radius)
+
+	//return obj->Intersection(shadowRay);
+
+
+	for (int i = 0; i < objectArray.size(); i++)
 	{
-		isCollided = false;
-		std::cout << "ERROR: Ray origin within circle" << std::endl;
-		sphereCol.setCollided(false);
-		return sphereCol;
+		if (element != i)
+		{
+			shadowCol = objectArray[i]->Intersection(shadowRay);
+			if (shadowCol.GetCollided() == true)
+			{
+				
+				shadowCol.SetHitObject(objectArray[i]);
+				return shadowCol;
+			}
+
+		}
 	}
-	//Find closest point on ray to centre of sphere
-	glm::vec3 closestPoint = ClosestPoint(_ray, _centre);
+	shadowCol.SetCollided(false);
+	return shadowCol;
 
-	//Check if closes point is in front or behind the ray origin/direction - point - ray origin
-	if (glm::length(closestPoint - _ray.origin)<0)
-	{
-		std::cout << "ERROR: shape behind ray" << std::endl;
-		sphereCol.setCollided(false);
-		return sphereCol;
-	}
-
-
-	//Work out distance from closes point to sphere centre (D)
-	//vector between centre point and closest point.
-	glm::vec3 OriginToCentre = _centre - _ray.origin;
-
-	glm::vec3 ClosestPointToCentre = (glm::dot(OriginToCentre, _ray.direction)*_ray.direction);
-
-	glm::vec3 XToCentre = _centre - _ray.origin - ClosestPointToCentre;
-
-	//length of vector between centre and closest point X )
-	float d = glm::length(XToCentre);
-
-
-	
-	if (d > _radius)
-	{
-		sphereCol.setCollided(false);
-		return sphereCol;
-	}
-	else
-	{
-	}
-
-	//distance between collision point and closest point
-	float x = sqrt((_radius*_radius) - (d*d));
-
-
-	//first point of intersection (3d vec) 
-	glm::vec3 col = _ray.origin+(((glm::dot((_centre - _ray.origin), _ray.direction)) - x)*_ray.direction);
-
-	float collisionDist = glm::length(col - _ray.origin);
-	sphereCol.setCollided(true);
-	sphereCol.setCollisionPoint(col);
-	sphereCol.setCollisionDistance(collisionDist);
-	return sphereCol;
 }
 
-
+glm::vec3 RayTracer::Reflection(glm::vec3 _rayDir, glm::vec3 _surfaceNormal)
+{
+	glm::vec3 rtn = _rayDir - 2 * glm::dot(_rayDir, _surfaceNormal)*_surfaceNormal;
+	return rtn;
+}
 
 void RayTracer::AddSphereToScene(glm::vec3 _coordinate, float _radius, std::shared_ptr<Material> _mat)
 {
@@ -158,17 +212,6 @@ void RayTracer::AddSphereToScene(glm::vec3 _coordinate, float _radius, std::shar
 
 }
 
-
-
-void RayTracer::AddLightToScene(glm::vec3 _coordinate, float _radius)
-{
-	std::shared_ptr<DirectionalLight> light = std::make_shared<DirectionalLight>();
-	light->SetCentre(_coordinate);
-	light->SetRadius(_radius);
-	dlArray.push_back(std::move(light));
-	std::cout << "Light added." << std::endl;
-}
-
 void RayTracer::AddDirectionalLightToScene(glm::vec3 _color, glm::vec3 _direction, float _intensity)
 {
 	std::shared_ptr<DirectionalLight> dl = std::make_shared<DirectionalLight>();
@@ -178,9 +221,10 @@ void RayTracer::AddDirectionalLightToScene(glm::vec3 _color, glm::vec3 _directio
 	dlArray.push_back(std::move(dl));
 }
 
-void RayTracer::AddPlaneToScene(glm::vec3 _coordinate, glm::vec3 _normal)
+void RayTracer::AddPlaneToScene(glm::vec3 _coordinate, glm::vec3 _normal, std::shared_ptr<Material> _material)
 {
 	std::shared_ptr<Plane> plane = std::make_shared<Plane>(_coordinate, _normal);
+	plane->SetMaterial(_material);
 	objectArray.push_back(std::move(plane));
 }
 
