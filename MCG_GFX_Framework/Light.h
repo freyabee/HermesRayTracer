@@ -13,7 +13,6 @@ public:
 	virtual float GetIntensity() = 0;
 	virtual glm::vec3 GetDirection() = 0;
 private:
-	glm::vec3 pixelColour;
 	glm::vec3 centre;
 
 

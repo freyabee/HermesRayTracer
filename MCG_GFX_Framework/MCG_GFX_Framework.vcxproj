@@ -149,7 +149,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="CircleLight.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="Light.cpp" />
@@ -158,6 +157,7 @@
     <ClCompile Include="MCG_GFX_Lib.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Plane.cpp" />
+    <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="RayTracer.cpp" />
     <ClCompile Include="Sphere.cpp" />
@@ -166,7 +166,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="CircleLight.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="Light.h" />
@@ -174,6 +173,7 @@
     <ClInclude Include="MCG_GFX_Lib.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Plane.h" />
+    <ClInclude Include="PointLight.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RayTracer.h" />
     <ClInclude Include="Sphere.h" />

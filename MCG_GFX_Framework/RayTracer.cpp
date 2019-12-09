@@ -12,6 +12,11 @@ RayTracer::RayTracer()
 {
 }
 
+RayTracer::RayTracer(glm::vec3 _backgroundColor)
+{
+	backgroundColor = _backgroundColor;
+}
+
 
 
 RayTracer::~RayTracer()
@@ -125,7 +130,7 @@ glm::vec3 RayTracer::TraceRay(Ray _ray, int depth)
 	}
 
 	//Else return background
-	return glm::vec3(0.0f, 0.2f, 0.52f);
+	return backgroundColor;
 	
 }
 

@@ -18,8 +18,13 @@ class RayTracer
 {
 private:
 	float bias = 1e-4f;
+	glm::vec3 backgroundColor;
+
+
+
 public:
 	RayTracer();
+	RayTracer(glm::vec3 _backgroundColor);
 	~RayTracer();
 	// Traces a ray and returns a color.
 	glm::vec3 TraceRay(Ray _ray, int depth = 0);
@@ -37,5 +42,6 @@ public:
 	void AddSphereToScene(glm::vec3 _coordinate, float _radius, std::shared_ptr<Material>);
 	void AddDirectionalLightToScene(glm::vec3 _coordinate, glm::vec3 _direction, float intensity);
 	void AddPlaneToScene(glm::vec3 _coordinate, glm::vec3 _normal, std::shared_ptr<Material> _material);
+
 };
 

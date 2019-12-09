@@ -95,12 +95,13 @@ int main( int argc, char *argv[] )
 		//define ray class
 		Ray currentRay;
 		//define raytracer
-		RayTracer tracer;
+		RayTracer tracer(glm::vec3(0.2f, 0.2f, 0.2f));
 		//predefine current pixel position
 		glm::ivec2 pixelPosition;
 
 
 		//define materials
+		std::shared_ptr<Material> grey = std::make_shared<Material>(glm::vec3(0.7f, 0.7f, 0.7f));
 		std::shared_ptr<Material> pink = std::make_shared<Material>(glm::vec3(0.8f, 0.3f, 0.8f));
 		std::shared_ptr<Material> red = std::make_shared<Material>(glm::vec3(0.8f, 0.f, 0.f));
 		std::shared_ptr<Material> green = std::make_shared<Material>(glm::vec3(0.f, 0.8f, 0.f));
@@ -112,7 +113,7 @@ int main( int argc, char *argv[] )
 		//Add plane(s)
 		glm::vec3 planepos(0.0f, -20.0f, 0.f);
 		glm::vec3 planenormal(0.f, 1.f, 0.f);
-		tracer.AddPlaneToScene(planepos, planenormal, pink);
+		tracer.AddPlaneToScene(planepos, planenormal, grey);
 
 
 
@@ -128,7 +129,7 @@ int main( int argc, char *argv[] )
 		glm::vec3 lightDirection(0.f, -1.0f, 0.f);
 		glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 		//Straight down light
-		tracer.AddDirectionalLightToScene(lightColor, lightDirection, 1.0f);
+		tracer.AddDirectionalLightToScene(lightColor, lightDirection, 3.0f);
 
 		//45 degree light
 		tracer.AddDirectionalLightToScene(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-1.0f, -1.0f, 0.0f), 1.0f);
