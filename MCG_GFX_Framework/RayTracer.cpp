@@ -70,11 +70,10 @@ glm::vec3 RayTracer::TraceRay(Ray _ray, int depth)
 
 
 
-		//call raycast for in shadow here
 		
 		
 		//if hit object is mirror
-		if (hitCol.GetHitObject()->GetMaterial()->GetMirror()==true)
+		if (hitCol.GetHitObject()->GetMaterial()->GetMirror()==true && depth<3)
 		{
 
 			//cast ray in reflection direction
@@ -82,85 +81,59 @@ glm::vec3 RayTracer::TraceRay(Ray _ray, int depth)
 			glm::vec3 reflectionVec = Reflection(_ray.GetDirection(), hitNormal);
 			Ray reflectRay;
 
-			reflectRay.origin = (hitCol.GetCollisionPoint());
-			reflectRay.origin = reflectRay.origin;
-			reflectRay.direction = reflectionVec;
-			return TraceRay(reflectRay, depth + 1);
+			reflectRay.origin = (hitCol.GetCollisionPoint()+hitNormal*0.1f);
+			reflectRay.direction = glm::normalize(reflectionVec);
+
+
+			return TraceRay(reflectRay, depth + 1)*0.85f;
 
 		}
-
-		/*
-		Collision shadowCol;
-		Ray shadowRay;
-		{
-			
-			//Collision inShadow = GetShadows(collidedElements[element], hitCol, hitCol.GetHitObject());
-			shadowRay.origin = (hitCol.GetCollisionPoint() + hitCol.GetHitObject()->ReturnSurfaceNormal(hitCol)*0.0001f);
-			shadowRay.direction = glm::vec3(0.f, -1.f, 0.f);
-
-			
-			shadowCol.SetCollided(false);
-			for (int i = 0; i < objectArray.size(); i++)
-			{
-				if (objectArray[i]!=hitCol.GetHitObject())
-				{
-					shadowCol = objectArray[i]->Intersection(shadowRay);
-					if (shadowCol.GetCollided() == true)
-					{
-						shadowCol.SetHitObject(objectArray[i]);
-					}
-				}
-			}
-		}
-		*/
-		
 
 
 		//SHADOWS//
 
 		bool shadowed = false;
+
+
 		Ray sRay;
-		sRay.origin = hitCol.GetCollisionPoint();
+		Collision sCol;
+		sRay.origin = hitCol.GetCollisionPoint() + (hitCol.GetCollisionNormal()*0.1f);
 		sRay.direction = glm::vec3(0.0f, 1.0f, 0.0f);
 
-
-		Collision sCol;
-		for (int i = 0; i < objectArray.size(); i++)
-		{
-			if (objectArray[i] != hitCol.GetHitObject())
+			for (int i = 0; i < objectArray.size(); i++)
 			{
-				sCol = objectArray[i]->SIntersection(sRay);
-
-				if (sCol.GetCollided() == true)
+				if (objectArray[i] != hitCol.GetHitObject())
 				{
-					shadowed = true;
+					sCol = objectArray[i]->SIntersection(sRay);
+
+					if (sCol.GetCollided() == true && sCol.GetHitObject() != hitCol.GetHitObject())
+					{
+						shadowed = true;
+					}
 				}
 			}
-		}
+
 		
 		
-		// hitCol.GetHitObject()->NormalShader(_ray, hitCol);
+		
+		//return hitCol.GetHitObject()->NormalShader(_ray, hitCol);
 		//return hitCol.GetHitObject()->DebugShader();
-		
-		
-		return hitCol.GetHitObject()->DiffuseShader(_ray, hitCol, dlArray[0], shadowed);
+		glm::vec3 hitColor = hitCol.GetHitObject()->DiffuseShader(_ray, hitCol, dlArray[0], shadowed);
 
-
+		
+		return glm::clamp(hitColor, glm::vec3(0.0f), glm::vec3(1.0f));
 	}
+
 	//Else return background
 	return glm::vec3(0.0f, 0.2f, 0.52f);
 	
 }
-
-
 
 glm::vec3 RayTracer::ClosestPoint(Ray _ray, glm::vec3 _point)
 {
 	glm::vec3 temp = glm::dot((_point - _ray.origin), _ray.direction)*_ray.direction;
 	return temp;
 }
-
-
 
 Collision RayTracer::GetShadows(int element, Collision _col, std::shared_ptr<Object> obj)
 {
@@ -196,7 +169,7 @@ Collision RayTracer::GetShadows(int element, Collision _col, std::shared_ptr<Obj
 
 glm::vec3 RayTracer::Reflection(glm::vec3 _rayDir, glm::vec3 _surfaceNormal)
 {
-	glm::vec3 rtn = _rayDir - 2 * glm::dot(_rayDir, _surfaceNormal)*_surfaceNormal;
+	glm::vec3 rtn = _rayDir - 2.0f * glm::dot(_rayDir, _surfaceNormal)*_surfaceNormal;
 	return rtn;
 }
 

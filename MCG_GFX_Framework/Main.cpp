@@ -11,8 +11,8 @@
 #include "Timer.h"
 #include "Material.h"
 
-int windowX = 500;
-int windowY = 500;
+int windowX = 1000;
+int windowY = 1000;
 
 
 
@@ -34,6 +34,7 @@ void RayTraceCoord(glm::ivec2 block, RayTracer _tracer, std::shared_ptr<Camera> 
 
 			try
 			{
+
 				MCG::DrawPixel(_pixelPosition, _pixelColour);
 			}
 			catch (std::exception& e)
@@ -100,10 +101,10 @@ int main( int argc, char *argv[] )
 
 
 		//define materials
-		std::shared_ptr<Material> pink = std::make_shared<Material>(glm::vec3(0.18f, 0.6, 0.8f));
-		std::shared_ptr<Material> red = std::make_shared<Material>(glm::vec3(0.18, 0.f, 0.f));
-		std::shared_ptr<Material> green = std::make_shared<Material>(glm::vec3(0.f, 0.18f, 0.f));
-		std::shared_ptr<Material> blue = std::make_shared<Material>(glm::vec3(0.f, 0.f, 0.18));
+		std::shared_ptr<Material> pink = std::make_shared<Material>(glm::vec3(0.8f, 0.3f, 0.8f));
+		std::shared_ptr<Material> red = std::make_shared<Material>(glm::vec3(0.8f, 0.f, 0.f));
+		std::shared_ptr<Material> green = std::make_shared<Material>(glm::vec3(0.f, 0.8f, 0.f));
+		std::shared_ptr<Material> blue = std::make_shared<Material>(glm::vec3(0.f, 0.f, 0.8f));
 		std::shared_ptr<Material> mirror = std::make_shared<Material>(true);
 
 
@@ -111,31 +112,27 @@ int main( int argc, char *argv[] )
 		//Add plane(s)
 		glm::vec3 planepos(0.0f, -20.0f, 0.f);
 		glm::vec3 planenormal(0.f, 1.f, 0.f);
-		//tracer.AddPlaneToScene(planepos, planenormal, pink);
+		tracer.AddPlaneToScene(planepos, planenormal, pink);
 
-		/*
-		glm::vec3 p2(0.0f, -20.0f, 0.f);
-		glm::vec3 n2(0.f, 0.f, -1.f);
-		tracer.AddPlaneToScene(p2, n2, red);
-
-		glm::vec3 p3(0.0f, -20.0f, 0.f);
-		glm::vec3 n3(-1.f, 0.f, 0.f);
-		tracer.AddPlaneToScene(p3, n3, green);
-		*/
 
 
 		//add sphere to screen
-		//tracer.AddSphereToScene(glm::vec3(-20.0f, 25.0f, -100.0f), 10.0f, green);
-		tracer.AddSphereToScene(glm::vec3(0.0f, 25.0f, -100.0f), 7.0f, green);
-		//tracer.AddSphereToScene(glm::vec3(20.0f, 25.0f, -100.0f), 10.0f, green);
-		tracer.AddSphereToScene(glm::vec3(0.0f, 0.0f, -100.0f), 15.0f, red);
+		tracer.AddSphereToScene(glm::vec3(-20.0f, -5.0f, -100.0f), 15.0f, mirror);
+		tracer.AddSphereToScene(glm::vec3(-10.0f, 30.0f, -100.0f), 5.0f, blue);
+		tracer.AddSphereToScene(glm::vec3(20.0f, 30.0f, -100.0f), 5.0f, green);
+		tracer.AddSphereToScene(glm::vec3(20.0f, 0.0f, -100.0f), 20.0f, mirror);
+		tracer.AddSphereToScene(glm::vec3(5.0f, -15.0f, -80.0f), 5.0f, pink);
 
 
 		//directional lighting
 		glm::vec3 lightDirection(0.f, -1.0f, 0.f);
 		glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
-		tracer.AddDirectionalLightToScene(lightColor, lightDirection, 10.0f);
-		
+		//Straight down light
+		tracer.AddDirectionalLightToScene(lightColor, lightDirection, 1.0f);
+
+		//45 degree light
+		tracer.AddDirectionalLightToScene(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-1.0f, -1.0f, 0.0f), 1.0f);
+
 
 		/*TIMER INIT*/
 		Timer t;
@@ -165,6 +162,10 @@ int main( int argc, char *argv[] )
 				);
 			}
 		}
+
+
+
+
 		pool.stop();
 		t.Stop();
 		std::cout << "Render fin" << std::endl;

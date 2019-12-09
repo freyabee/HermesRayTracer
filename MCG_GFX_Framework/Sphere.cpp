@@ -17,18 +17,11 @@ glm::vec3 Sphere::DiffuseShader(Ray _ray, Collision _col, std::shared_ptr<Direct
 {
 	if (_inShadow)
 	{
-		return glm::vec3(0.1f, 0.1f, 0.1f);
+		return glm::vec3(0.0f, 0.0f, 0.0f);
 	}
-	//glm::vec3 colNormal = _col.GetCollisionNormal();
-	glm::vec3 colNormal = ReturnSurfaceNormal(_col);
-
+	glm::vec3 colNormal = _col.GetCollisionNormal();
 	glm::vec3 lightVec = -_light->GetDirection();
-	//lightVec = glm::normalize(lightVec);
-	
-
-	glm::vec3 hitColor = material->GetAlbedo()/glm::pi<float>() * (_light->GetIntensity() * _light->GetColor()) * std::max(0.f, glm::dot(colNormal, lightVec));
-
-
+	glm::vec3 hitColor = material->GetAlbedo()/glm::pi<float>() * ((_light->GetIntensity() * _light->GetColor())) * std::max(0.f, glm::dot(colNormal, lightVec));
 	return hitColor;
 }
 
@@ -110,71 +103,77 @@ Collision Sphere::SIntersection(Ray _ray)
 {
 
 	Collision rtn;
-	glm::vec3 oc = _ray.origin - centre;
+
+
+	glm::vec3 oc = _ray.origin - centre; //Origin to centre
 	float a = glm::dot(_ray.GetDirection(), _ray.GetDirection()); //a = 1
 	float b = 2.0f * glm::dot(oc, _ray.direction);		//b = 2*D*(O-C)
 	float c = glm::dot(oc,oc) - (radius * radius);//c = |O-C|^2 - R
 
 
 
+
+
+	float discr = b * b - 4 * a * c; //discriminant to calculate points on intersection
+
+	bool intersect=false; // bool to calculate if intersection happens
+
+
 	float t0;
 	float t1;
 	float t;
 
-
-	float discr = b * b - 4 * a * c;
-
-	bool intersect;
-
-
+	// discrim in less than zero = no hits
 	if (discr < 0) {
 		rtn.SetCollided(false);
 		return rtn;
-	}
+	}//discrim equal to zero, one hit
 	else if (discr == 0) 
 	{
-		t0 = t1 = -0.5 * b / a;
+		t0 = t1 = -0.5f * b / a;
 		intersect = true;
-	} 
+	}//discrim > 0, two intersects
 	else {
 		float q = (b > 0) ?
-			-0.5 * (b + sqrt(discr)) :
-			-0.5 * (b - sqrt(discr));
+			-0.5f * (b + sqrt(discr)) :
+			-0.5f * (b - sqrt(discr));
 		t0 = q / a;
 		t1 = c / q;
 		intersect = true;
 	}
 
-
-	if (t0 > t1)
+	if (intersect==true)//if intersection(s) found with ray
 	{
-		std::swap(t0, t1);
 
-	}
-
-
-
-
-
-	if (intersect==true)
-	{
-		if (t0 > t1) std::swap(t0, t1);
-		if (t0 < 0)
+		if (t0 > t1) std::swap(t0, t1); //check if closest point is allocated to t0
+		if (t0 < 0.0f)
 		{
 			t0 = t1;
-			if (t0 < 0)
+			if (t0 < 0.0f)
 			{
 				rtn.SetCollided(false);
 			}
 		}
 		t = t0;
-		glm::vec3 collisionPoint = _ray.origin + (t0*_ray.GetDirection());	// O +t0*D
-		glm::vec3 collisionNormal = glm::normalize(collisionPoint - centre); // ||Phit-C||
-		float collisionDistance = glm::distance(_ray.origin, collisionPoint);
-		rtn.SetCollided(true);
-		rtn.SetCollisionPoint(collisionPoint);
-		rtn.SetCollisionNormal(collisionNormal);
-		rtn.SetCollisionDistance(collisionDistance);
+
+		if (t >= 0.0f)
+		{
+			glm::vec3 collisionPoint = _ray.origin + (t0*_ray.GetDirection());	// O + t0*D : origin + t * distance
+			glm::vec3 collisionNormal = glm::normalize(collisionPoint - centre); // ||Phit-C|| : normal = hit point - centre
+			//float collisionDistance = glm::distance(_ray.origin, collisionPoint); // distance between origin and collision point
+			float collisionDistance = glm::length(collisionPoint - _ray.origin);
+
+			rtn.SetCollided(true);
+			rtn.SetCollisionPoint(collisionPoint);
+			rtn.SetCollisionNormal(collisionNormal);
+			rtn.SetCollisionDistance(collisionDistance);
+		}
+		else
+		{
+			rtn.SetCollided(false);
+
+		}
+		
 		return rtn;
 	}
 	else

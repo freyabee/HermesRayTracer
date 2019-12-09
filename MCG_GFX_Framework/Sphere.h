@@ -33,10 +33,12 @@ public:
 	void SetMaterial(std::shared_ptr<Material>);
 
 private:
-	glm::vec3 pixelColour;
+	//glm::vec3 pixelColour;
 	glm::vec3 centre;
 	float radius;
 	std::shared_ptr<Material> material;
+
+
 	
 
 };
