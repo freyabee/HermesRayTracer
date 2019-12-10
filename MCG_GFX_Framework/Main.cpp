@@ -95,17 +95,19 @@ int main( int argc, char *argv[] )
 		//define ray class
 		Ray currentRay;
 		//define raytracer
-		RayTracer tracer(glm::vec3(0.2f, 0.2f, 0.2f));
+		RayTracer tracer(glm::vec3(0.f, 0.8f, 0.8f));
 		//predefine current pixel position
 		glm::ivec2 pixelPosition;
 
 
 		//define materials
+		std::shared_ptr<Material> white = std::make_shared<Material>(glm::vec3(0.9f, 0.9f, 0.9f));
+		std::shared_ptr<Material> skyblue = std::make_shared<Material>(glm::vec3(0.f, 0.8f, 0.8f));
 		std::shared_ptr<Material> grey = std::make_shared<Material>(glm::vec3(0.7f, 0.7f, 0.7f));
 		std::shared_ptr<Material> pink = std::make_shared<Material>(glm::vec3(0.8f, 0.3f, 0.8f));
 		std::shared_ptr<Material> red = std::make_shared<Material>(glm::vec3(0.8f, 0.f, 0.f));
 		std::shared_ptr<Material> green = std::make_shared<Material>(glm::vec3(0.f, 0.8f, 0.f));
-		std::shared_ptr<Material> blue = std::make_shared<Material>(true);
+		std::shared_ptr<Material> blue = std::make_shared<Material>(glm::vec3(0.f, 0.f, 0.8f));
 		std::shared_ptr<Material> mirror = std::make_shared<Material>(true);
 
 
@@ -118,28 +120,37 @@ int main( int argc, char *argv[] )
 
 
 
-		tracer.AddSphereToScene(glm::vec3(20.0f, 0.0f, -100.0f), 20.0f, green);
+		//tracer.AddSphereToScene(glm::vec3(0.0f, 10.0f, -95.0f), 10.0f, grey);
+
 		/*
+
+				
+
+		*/
 		//add sphere to screen
 		tracer.AddSphereToScene(glm::vec3(-20.0f, -5.0f, -100.0f), 15.0f, mirror);
-		tracer.AddSphereToScene(glm::vec3(-10.0f, 30.0f, -100.0f), 5.0f, blue);
+		tracer.AddSphereToScene(glm::vec3(-10.0f, 30.0f, -100.0f), 5.0f, white);
 		tracer.AddSphereToScene(glm::vec3(20.0f, 30.0f, -100.0f), 5.0f, green);
 		tracer.AddSphereToScene(glm::vec3(20.0f, 0.0f, -100.0f), 20.0f, mirror);
 		tracer.AddSphereToScene(glm::vec3(5.0f, -15.0f, -80.0f), 5.0f, pink);
-		*/
-
+		
 
 
 
 		/*DIRECTIONAL LIGHTING*/
 		glm::vec3 lightDirection(0.f, -1.0f, 0.f);
-		//glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
-		glm::vec3 lightColor(0.0f, 0.0f, 0.0f);
-		tracer.AddDirectionalLightToScene(lightColor, lightDirection, 1.0f);
+		//glm::vec3 lightColor(0.0f, 0.0f, 0.0f);
+		glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+		tracer.AddDirectionalLightToScene(lightColor, lightDirection, 1.5f);
 
 		/*POINT LIGHTING*/
 		glm::vec3 plCentre(0.f, 0.f, -100.f);
-		tracer.AddPointLightToScene(plCentre, 100.0f, lightColor);
+
+		
+
+
+		tracer.AddPointLightToScene(glm::vec3(-20.0f, 10.0f, -80.0f), 100.0f, glm::vec3(0.8f, 0.f, 0.f));
+		tracer.AddPointLightToScene(glm::vec3(20.0f, 10.0f, -80.0f), 100.0f, glm::vec3(0.f, 0.8f, 0.f));
 
 
 		/*TIMER INIT*/

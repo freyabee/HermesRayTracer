@@ -1,5 +1,7 @@
 #include "PointLight.h"
+#include "Material.h"
 #include <vector>
+#include "Collision.h"
 
 
 PointLight::PointLight()
@@ -28,15 +30,17 @@ PointLight::~PointLight()
 
 
 
-glm::vec3 PointLight::CalculateShadingInfo(glm::vec3 _hitPoint)
+glm::vec3 PointLight::CalculateShadingInfo(Collision _hitcol)
 {
 
-	glm::vec3 lightDir = lightDir = centre - _hitPoint;
-	float distance = glm::length(lightDir);
-	lightDir = glm::normalize(lightDir);
-	glm::vec3 lightIntensity = intensity * color / (4 * glm::pi<float>() * distance);
+	glm::vec3 lightDir = centre - _hitcol.GetCollisionPoint();
+	float r2 = glm::length(lightDir);
+	glm::vec3 lightIntensity = intensity * color / (4 * glm::pi<float>() * r2);
 
-	return lightIntensity;
+	//lightIntensity *= _hitcol.GetHitObject()->GetMaterial()->GetAlbedo();
+	lightIntensity *= std::max(0.f, glm::dot(_hitcol.GetCollisionNormal(), glm::normalize(lightDir)));
+	return glm::clamp(lightIntensity, 0.f, 1.0f);
+	//return lightIntensity;
 }
 
 glm::vec3 PointLight::GetDirection(glm::vec3 _hitPoint)

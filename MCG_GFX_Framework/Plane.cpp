@@ -126,7 +126,7 @@ glm::vec3 Plane::ReturnSurfaceNormal(Collision _col)
 	return normal;
 }
 
-glm::vec3 Plane::DiffuseShader(Ray _ray, Collision _col, std::shared_ptr<DirectionalLight> _light, glm::vec3 _plVec, bool _inShadow)
+glm::vec3 Plane::DiffuseShader(Ray _ray, Collision _col, std::shared_ptr<DirectionalLight> _dlight, glm::vec3 _plVec, bool _inShadow)
 {
 	if (_inShadow)
 	{
@@ -135,8 +135,10 @@ glm::vec3 Plane::DiffuseShader(Ray _ray, Collision _col, std::shared_ptr<Directi
 
 	glm::vec3 hitPoint = _col.GetCollisionPoint();
 	glm::vec3 hitNormal = normal;
-	glm::vec3 lightVec = (_light->GetDirection())*-1.0f;
-	glm::vec3 light = _light->GetIntensity() * _light->GetColor() * std::max(0.f, glm::dot(hitNormal, lightVec));
+	glm::vec3 lightVec = (_dlight->GetDirection())*-1.0f;
+
+
+	glm::vec3 light = _dlight->GetIntensity() * _dlight->GetColor() * std::max(0.f, glm::dot(hitNormal, lightVec));
 
 	light += _plVec;
 

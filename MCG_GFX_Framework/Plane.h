@@ -22,7 +22,7 @@ public:
 	Collision SIntersection(Ray _ray);
 	glm::vec3 ReturnSurfaceNormal(Collision _col);
 	//Shader
-	glm::vec3 DiffuseShader(Ray _ray, Collision _col, std::shared_ptr<DirectionalLight> _light, glm::vec3 _plVec, bool _inShadow);
+	glm::vec3 DiffuseShader(Ray _ray, Collision _col, std::shared_ptr<DirectionalLight> _dlight, glm::vec3 _plCumulative, bool _inShadow);
 	glm::vec3 NormalShader(Ray _ray, Collision _col);
 	glm::vec3 DebugShader();
 	//Setters

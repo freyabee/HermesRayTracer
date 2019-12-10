@@ -79,7 +79,7 @@ glm::vec3 RayTracer::TraceRay(Ray _ray, int depth)
 		
 		
 		//if hit object is mirror
-		if (hitCol.GetHitObject()->GetMaterial()->GetMirror()==true && depth<3)
+		if (hitCol.GetHitObject()->GetMaterial()->GetMirror()==true && depth<10)
 		{
 
 			//cast ray in reflection direction
@@ -96,11 +96,9 @@ glm::vec3 RayTracer::TraceRay(Ray _ray, int depth)
 		}
 
 
-		//SHADOWS//
-
+		/*SHADOWS*/
 		bool shadowed = false;
-
-
+		//Define shadow ray and shadow collision
 		Ray sRay;
 		Collision sCol;
 		sRay.origin = hitCol.GetCollisionPoint() + (hitCol.GetCollisionNormal()*0.1f);
@@ -120,38 +118,60 @@ glm::vec3 RayTracer::TraceRay(Ray _ray, int depth)
 		}
 
 
+		/*POINT LIGHTING*/
+		//Define cumulative light vector for all point lights
+		glm::vec3 plCumulative(0.f, 0.f, 0.f);
+		//Define point light ray and collision
 		Ray plRay;
 		Collision plCol;
-		glm::vec3 plCumulative(0.f, 0.f, 0.f);
 
+		
 		plRay.origin = hitCol.GetCollisionPoint() + (hitCol.GetCollisionNormal()*0.1f);
+
+		
+		//For each point in the point light array
 		for (int ipl = 0; ipl < plArray.size(); ipl++)
 		{
-			plRay.direction = -plArray[ipl]->GetDirection(hitCol.GetCollisionPoint());
+			//plRay points from pixel to light 
+			plRay.direction = plArray[ipl]->GetDirection(hitCol.GetCollisionPoint());
 
 
+			//For each object in the scene
 			for (int i = 0; i < objectArray.size(); i++)
 			{
+				//Check collision on way to light
 				plCol = objectArray[i]->SIntersection(plRay);
 
 
-				if (plCol.GetCollided() == true)
+				if (!plCol.GetCollided() == true)
 				{
-					//Add Cumulative li
-					plCumulative += plArray[ipl]->CalculateShadingInfo(hitCol.GetCollisionPoint());
+					shadowed = false;
+					glm::vec3 thisLightColor = plArray[ipl]->CalculateShadingInfo(hitCol);
+					plCumulative += thisLightColor;
 				}
+				
+
+
+				
 			}
 		}
+		
+		
+		//plCumulative += plArray[ipl]->CalculateShadingInfo(hitCol.GetCollisionPoint());
 
-		
-		
-		
-		
+
+		//return plCumulative;
+		//plCumulative = plArray[0]->CalculateShadingInfo(hitCol.GetCollisionPoint());
+
+
 		//return hitCol.GetHitObject()->NormalShader(_ray, hitCol);
 		//return hitCol.GetHitObject()->DebugShader();
-		glm::vec3 hitColor = hitCol.GetHitObject()->DiffuseShader(_ray, hitCol, dlArray[0], shadowed);
 
-		
+
+
+		glm::vec3 hitColor = hitCol.GetHitObject()->DiffuseShader(_ray, hitCol, dlArray[0], plCumulative, shadowed);
+
+
 		return glm::clamp(hitColor, glm::vec3(0.0f), glm::vec3(1.0f));
 	}
 

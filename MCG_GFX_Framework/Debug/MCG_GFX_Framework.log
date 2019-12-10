@@ -1,10 +1,3 @@
-﻿  PointLight.cpp
-  RayTracer.cpp
-c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\raytracer.cpp(37): warning C4018: '<': signed/unsigned mismatch
-c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\raytracer.cpp(56): warning C4018: '<': signed/unsigned mismatch
-c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\raytracer.cpp(109): warning C4018: '<': signed/unsigned mismatch
-c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\raytracer.cpp(130): warning C4018: '<': signed/unsigned mismatch
-c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\raytracer.cpp(134): warning C4018: '<': signed/unsigned mismatch
-c:\users\freya\desktop\ray tracer\hermesraytracer\mcg_gfx_framework\raytracer.cpp(182): warning C4018: '<': signed/unsigned mismatch
-  Generating Code...
-  MCG_GFX_Framework.vcxproj -> C:\Users\Freya\Desktop\Ray Tracer\HermesRayTracer\Debug\MCG_GFX_Framework.exe
+﻿  Main.cpp
+c:\users\s4921584\hermesraytracer\mcg_gfx_framework\main.cpp(40): warning C4101: 'e': unreferenced local variable
+  MCG_GFX_Framework.vcxproj -> C:\Users\s4921584\HermesRayTracer\Debug\MCG_GFX_Framework.exe
