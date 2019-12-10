@@ -13,15 +13,23 @@ Sphere::~Sphere()
 {
 }
 
-glm::vec3 Sphere::DiffuseShader(Ray _ray, Collision _col, std::shared_ptr<DirectionalLight> _light, bool _inShadow)
+glm::vec3 Sphere::DiffuseShader(Ray _ray, Collision _col, std::shared_ptr<DirectionalLight> _light, glm::vec3 _plVec,  bool _inShadow)
 {
 	if (_inShadow)
 	{
 		return glm::vec3(0.0f, 0.0f, 0.0f);
 	}
+
+
 	glm::vec3 colNormal = _col.GetCollisionNormal();
 	glm::vec3 lightVec = -_light->GetDirection();
-	glm::vec3 hitColor = material->GetAlbedo()/glm::pi<float>() * ((_light->GetIntensity() * _light->GetColor())) * std::max(0.f, glm::dot(colNormal, lightVec));
+
+	glm::vec3 light = ((_light->GetIntensity() * _light->GetColor())) * std::max(0.f, glm::dot(colNormal, lightVec));
+	light += _plVec;
+
+
+
+	glm::vec3 hitColor = material->GetAlbedo()/glm::pi<float>() * light;
 	return hitColor;
 }
 

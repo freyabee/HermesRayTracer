@@ -105,45 +105,49 @@ int main( int argc, char *argv[] )
 		std::shared_ptr<Material> pink = std::make_shared<Material>(glm::vec3(0.8f, 0.3f, 0.8f));
 		std::shared_ptr<Material> red = std::make_shared<Material>(glm::vec3(0.8f, 0.f, 0.f));
 		std::shared_ptr<Material> green = std::make_shared<Material>(glm::vec3(0.f, 0.8f, 0.f));
-		std::shared_ptr<Material> blue = std::make_shared<Material>(glm::vec3(0.f, 0.f, 0.8f));
+		std::shared_ptr<Material> blue = std::make_shared<Material>(true);
 		std::shared_ptr<Material> mirror = std::make_shared<Material>(true);
 
 
 
 		//Add plane(s)
-		glm::vec3 planepos(0.0f, -20.0f, 0.f);
+		glm::vec3 planepos(0.0f, -20.0f, -150.f);
 		glm::vec3 planenormal(0.f, 1.f, 0.f);
 		tracer.AddPlaneToScene(planepos, planenormal, grey);
 
 
 
+
+		tracer.AddSphereToScene(glm::vec3(20.0f, 0.0f, -100.0f), 20.0f, green);
+		/*
 		//add sphere to screen
 		tracer.AddSphereToScene(glm::vec3(-20.0f, -5.0f, -100.0f), 15.0f, mirror);
 		tracer.AddSphereToScene(glm::vec3(-10.0f, 30.0f, -100.0f), 5.0f, blue);
 		tracer.AddSphereToScene(glm::vec3(20.0f, 30.0f, -100.0f), 5.0f, green);
 		tracer.AddSphereToScene(glm::vec3(20.0f, 0.0f, -100.0f), 20.0f, mirror);
 		tracer.AddSphereToScene(glm::vec3(5.0f, -15.0f, -80.0f), 5.0f, pink);
+		*/
 
 
-		//directional lighting
+
+
+		/*DIRECTIONAL LIGHTING*/
 		glm::vec3 lightDirection(0.f, -1.0f, 0.f);
-		glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
-		//Straight down light
-		tracer.AddDirectionalLightToScene(lightColor, lightDirection, 3.0f);
+		//glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+		glm::vec3 lightColor(0.0f, 0.0f, 0.0f);
+		tracer.AddDirectionalLightToScene(lightColor, lightDirection, 1.0f);
 
-		//45 degree light
-		tracer.AddDirectionalLightToScene(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-1.0f, -1.0f, 0.0f), 1.0f);
+		/*POINT LIGHTING*/
+		glm::vec3 plCentre(0.f, 0.f, -100.f);
+		tracer.AddPointLightToScene(plCentre, 100.0f, lightColor);
 
 
 		/*TIMER INIT*/
 		Timer t;
 		t.Start();
 
-		/* THREAD INIT */
-		//init thread pool
+		/* THREADS INITIALIZATION */
 		ThreadPool pool{ 16 };
-
-		//std::cout << max_threads << std::endl;
 		glm::ivec2 block(0, 0);
 		glm::ivec2 blockSize(blockW, blockH);
 

@@ -4,11 +4,21 @@ class PointLight
 {
 public:
 	PointLight();
-	PointLight(glm::vec3 _centre, float _intensity);
+	PointLight(glm::vec3 _centre, float _intensity, glm::vec3 _color);
+	PointLight(glm::vec3 _centre, float _intensity, float radius, glm::vec3 _color);
 	~PointLight();
-	void CalculateShadingInfo(glm::vec3 _hitPoint, std::unique_ptr<glm::vec3> _lightDir, std::unique_ptr<glm::vec3> _lightIntensity);
+	glm::vec3 CalculateShadingInfo(glm::vec3 _hitPoint);
+	glm::vec3 GetDirection(glm::vec3 _hitPoint);
+	float GetIntensity();
+	glm::vec3 GetCentre();
+	glm::vec3 GetColor();
+	float GetRadius();
+
 private:
 	glm::vec3 centre;
+	glm::vec3 color;
 	float intensity;
+	float radius;
+
 };
 

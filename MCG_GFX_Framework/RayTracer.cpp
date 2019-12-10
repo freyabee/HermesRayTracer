@@ -4,6 +4,7 @@
 #include "Collision.h"
 #include "Ray.h"
 #include "DirectionalLight.h"
+#include "PointLight.h"
 #include "Object.h"
 #include "Camera.h"
 #include "Material.h"
@@ -105,19 +106,44 @@ glm::vec3 RayTracer::TraceRay(Ray _ray, int depth)
 		sRay.origin = hitCol.GetCollisionPoint() + (hitCol.GetCollisionNormal()*0.1f);
 		sRay.direction = glm::vec3(0.0f, 1.0f, 0.0f);
 
-			for (int i = 0; i < objectArray.size(); i++)
+		for (int i = 0; i < objectArray.size(); i++)
+		{
+			if (objectArray[i] != hitCol.GetHitObject())
 			{
-				if (objectArray[i] != hitCol.GetHitObject())
-				{
-					sCol = objectArray[i]->SIntersection(sRay);
+				sCol = objectArray[i]->SIntersection(sRay);
 
-					if (sCol.GetCollided() == true && sCol.GetHitObject() != hitCol.GetHitObject())
-					{
-						shadowed = true;
-					}
+				if (sCol.GetCollided() == true && sCol.GetHitObject() != hitCol.GetHitObject())
+				{
+					shadowed = true;
 				}
 			}
+		}
 
+
+		Ray plRay;
+		Collision plCol;
+		glm::vec3 plCumulative(0.f, 0.f, 0.f);
+
+		plRay.origin = hitCol.GetCollisionPoint() + (hitCol.GetCollisionNormal()*0.1f);
+		for (int ipl = 0; ipl < plArray.size(); ipl++)
+		{
+			plRay.direction = -plArray[ipl]->GetDirection(hitCol.GetCollisionPoint());
+
+
+			for (int i = 0; i < objectArray.size(); i++)
+			{
+				plCol = objectArray[i]->SIntersection(plRay);
+
+
+				if (plCol.GetCollided() == true)
+				{
+					//Add Cumulative li
+					plCumulative += plArray[ipl]->CalculateShadingInfo(hitCol.GetCollisionPoint());
+				}
+			}
+		}
+
+		
 		
 		
 		
@@ -149,8 +175,6 @@ Collision RayTracer::GetShadows(int element, Collision _col, std::shared_ptr<Obj
 	shadowRay.origin = (_col.GetCollisionPoint() + (obj->ReturnSurfaceNormal(_col)));
 	shadowRay.direction = glm::vec3(0.f, 1.f, 0.f);
 
-
-	//return obj->Intersection(shadowRay);
 
 
 	for (int i = 0; i < objectArray.size(); i++)
@@ -186,7 +210,7 @@ void RayTracer::AddSphereToScene(glm::vec3 _coordinate, float _radius, std::shar
 	sphere->SetCentre(_coordinate);
 	sphere->SetRadius(_radius);
 	objectArray.push_back(sphere);
-	std::cout << "Sphere added." << std::endl;
+	std::cout << "Sphere added to scene at (" <<_coordinate.x<<","<<_coordinate.y<<","<<_coordinate.z<<")." << std::endl;
 
 }
 
@@ -197,6 +221,7 @@ void RayTracer::AddDirectionalLightToScene(glm::vec3 _color, glm::vec3 _directio
 	dl->SetColor(_color);
 	dl->SetIntensity(_intensity);
 	dlArray.push_back(std::move(dl));
+	std::cout << "Directional light added to scene." << std::endl;
 }
 
 void RayTracer::AddPlaneToScene(glm::vec3 _coordinate, glm::vec3 _normal, std::shared_ptr<Material> _material)
@@ -204,5 +229,14 @@ void RayTracer::AddPlaneToScene(glm::vec3 _coordinate, glm::vec3 _normal, std::s
 	std::shared_ptr<Plane> plane = std::make_shared<Plane>(_coordinate, _normal);
 	plane->SetMaterial(_material);
 	objectArray.push_back(std::move(plane));
+	std::cout << "Plane added to scene at (" << _coordinate.x << "," << _coordinate.y << "," << _coordinate.z << ")." << std::endl;
+}
+
+void RayTracer::AddPointLightToScene(glm::vec3 _centre, float _intensity, glm::vec3 _color)
+{
+	std::shared_ptr<PointLight> pl = std::make_shared<PointLight>(_centre, _intensity, _color);
+	plArray.push_back(std::move(pl));
+	std::cout << "Point light added to scene at (" << _centre.x << "," << _centre.y << "," << _centre.z << ")." << std::endl;
+
 }
 

@@ -14,7 +14,7 @@ public:
 	~Object();
 	virtual Collision Intersection(Ray _ray) = 0;
 	virtual Collision SIntersection(Ray _ray) = 0;
-	virtual glm::vec3 DiffuseShader(Ray _ray, Collision _col, std::shared_ptr<DirectionalLight> _light, bool _inShadow) = 0;
+	virtual glm::vec3 DiffuseShader(Ray _ray, Collision _col, std::shared_ptr<DirectionalLight> _light, glm::vec3 _plVec, bool _inShadow) = 0;
 	virtual glm::vec3 ReturnSurfaceNormal(Collision _col) = 0;
 	virtual glm::vec3 NormalShader(Ray _ray, Collision _col) = 0;
 	virtual glm::vec3 DebugShader() = 0;
