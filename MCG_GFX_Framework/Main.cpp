@@ -91,15 +91,6 @@ int main( int argc, char *argv[] )
 		//Creation of camera object
 		std::shared_ptr<Camera> camera = std::make_shared<Camera>(glm::vec2(windowX, windowY));
 
-
-		//define ray class
-		Ray currentRay;
-		//define raytracer
-		RayTracer tracer(glm::vec3(0.f, 0.8f, 0.8f));
-		//predefine current pixel position
-		glm::ivec2 pixelPosition;
-
-
 		//define materials
 		std::shared_ptr<Material> white = std::make_shared<Material>(glm::vec3(0.9f, 0.9f, 0.9f));
 		std::shared_ptr<Material> skyblue = std::make_shared<Material>(glm::vec3(0.f, 0.8f, 0.8f));
@@ -109,14 +100,35 @@ int main( int argc, char *argv[] )
 		std::shared_ptr<Material> green = std::make_shared<Material>(glm::vec3(0.f, 0.8f, 0.f));
 		std::shared_ptr<Material> blue = std::make_shared<Material>(glm::vec3(0.f, 0.f, 0.8f));
 		std::shared_ptr<Material> mirror = std::make_shared<Material>(true);
+		std::shared_ptr<Material> light_pink = std::make_shared<Material>(glm::vec3(1.0f, 0.8f, 1.0f));
 
+		//define pallet
+		std::shared_ptr<Material> p_blue = std::make_shared<Material>(9.f, 0.f, 136.f);
+		std::shared_ptr<Material> p_purple = std::make_shared<Material>(147.f, 0.f, 119.f);
+		std::shared_ptr<Material> p_pink = std::make_shared<Material>(228.f, 0.f, 124.f);
+		std::shared_ptr<Material> p_yellow = std::make_shared<Material>(255.f, 189.f, 57.f);
+
+
+		//define ray class
+		Ray currentRay;
+		//define raytracer
+		RayTracer tracer(p_blue->GetAlbedo());
+		//predefine current pixel position
+		glm::ivec2 pixelPosition;
+
+
+		
 
 
 		//Add plane(s)
 		glm::vec3 planepos(0.0f, -20.0f, -150.f);
 		glm::vec3 planenormal(0.f, 1.f, 0.f);
-		tracer.AddPlaneToScene(planepos, planenormal, grey);
+		tracer.AddPlaneToScene(planepos, planenormal, white);
+		
 
+		planepos = glm::vec3(0.f, 0.f, -200.f);
+		planenormal = glm::vec3(0.f, 0.f, 1.f);
+		tracer.AddPlaneToScene(planepos, planenormal, white);
 
 
 
@@ -129,12 +141,11 @@ int main( int argc, char *argv[] )
 		*/
 		//add sphere to screen
 		tracer.AddSphereToScene(glm::vec3(-20.0f, -5.0f, -100.0f), 15.0f, mirror);
-		tracer.AddSphereToScene(glm::vec3(-10.0f, 30.0f, -100.0f), 5.0f, white);
-		tracer.AddSphereToScene(glm::vec3(20.0f, 30.0f, -100.0f), 5.0f, green);
-		tracer.AddSphereToScene(glm::vec3(20.0f, 0.0f, -100.0f), 20.0f, mirror);
-		tracer.AddSphereToScene(glm::vec3(5.0f, -15.0f, -80.0f), 5.0f, pink);
-		
-
+		tracer.AddSphereToScene(glm::vec3(-10.0f, 30.0f, -100.0f), 5.0f, p_blue);
+		tracer.AddSphereToScene(glm::vec3(20.0f, 30.0f, -100.0f), 5.0f, p_pink);
+		tracer.AddSphereToScene(glm::vec3(20.0f, 0.0f, -100.0f), 20.0f, p_yellow);
+		tracer.AddSphereToScene(glm::vec3(5.0f, -15.0f, -80.0f), 5.0f, mirror);
+		tracer.AddSphereToScene(glm::vec3(-10.0f, -15.0f, -80.0f), 2.0f, p_yellow);
 
 
 		/*DIRECTIONAL LIGHTING*/
@@ -149,9 +160,9 @@ int main( int argc, char *argv[] )
 		
 
 
-		tracer.AddPointLightToScene(glm::vec3(-20.0f, 10.0f, -80.0f), 100.0f, glm::vec3(0.8f, 0.f, 0.f));
-		tracer.AddPointLightToScene(glm::vec3(20.0f, 10.0f, -80.0f), 100.0f, glm::vec3(0.f, 0.8f, 0.f));
-
+		tracer.AddPointLightToScene(glm::vec3(-20.0f, 10.0f, -90.0f), 100.0f, p_pink->GetAlbedo());
+		tracer.AddPointLightToScene(glm::vec3(20.0f, 10.0f, -90.0f), 100.0f, p_purple->GetAlbedo());
+		tracer.AddPointLightToScene(glm::vec3(0.0f, 10.0f, -110.0f), 100.0f, p_yellow->GetAlbedo());
 
 		/*TIMER INIT*/
 		Timer t;
