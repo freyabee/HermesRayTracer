@@ -1,5 +1,3 @@
-#include "RayTracer.h"
-#include <memory>
 #include "Plane.h"
 #include "Collision.h"
 #include "Ray.h"
@@ -8,6 +6,10 @@
 #include "Object.h"
 #include "Camera.h"
 #include "Material.h"
+#include "Scene.h"
+
+#include <memory>
+#include "RayTracer.h"
 
 RayTracer::RayTracer()
 {
@@ -18,21 +20,120 @@ RayTracer::RayTracer(glm::vec3 _backgroundColor)
 	backgroundColor = _backgroundColor;
 }
 
-
-
 RayTracer::~RayTracer()
 {
 }
 
 glm::vec3 RayTracer::TraceRay(Ray _ray, int depth)
 {
+	/* Get all collisions for the ray. */
+	std::vector<Collision> collisions = GetCollisions(_ray);
+
+
+
+	if (collisions.size() > 0)
+	{
+		/* Get closest collision from all collisions. */
+		Collision hitCol = GetClosestCollision(collisions);
+
+		/* If object material is mirror. */
+		if (hitCol.GetHitObject()->GetMaterial()->GetMirror()==true && depth<10)
+		{
+			/* Trace mirror ray and return it's shaded value */
+			return TraceRay(GetReflectionRay(_ray, hitCol), depth + 1)*0.85f;
+
+		}
+
+
+		/* Calculate if pixel is in shadow from point light. */
+		bool shadowed = CalculateShadows(hitCol);
+
+
+		/* Calculate color input from point lights. */
+		glm::vec3 plCumulative = CalculatePointLights(hitCol);
+		if (plCumulative != glm::vec3(0.f))
+		{
+			shadowed = false;
+		}
+
+
+		/* Put values into objects diffuse shader */
+		glm::vec3 hitColor = hitCol.GetHitObject()->DiffuseShader(_ray, hitCol, dlArray[0], plCumulative, shadowed);
+
+
+		/* Debug shaders
+		return hitCol.GetHitObject()->NormalShader(_ray, hitCol);
+		return hitCol.GetHitObject()->DebugShader();
+		*/
+
+		/* Clamp returning hit color between 0 and 1 */
+		return glm::clamp(hitColor, glm::vec3(0.0f), glm::vec3(1.0f));
+	}
+	/* If no collisions found return background color. */
+	return backgroundColor;
+	
+}
+
+/* Stages of the TraceRay function*/
+
+bool RayTracer::CalculateShadows(Collision _col)
+{
+	Ray sRay;
+	Collision sCol;
+	sRay.origin = _col.GetCollisionPoint() + (_col.GetCollisionNormal()*0.1f);
+	sRay.direction = -dlArray[0]->GetDirection();
+
+	for (int i = 0; i < objectArray.size(); i++)
+	{
+		if (objectArray[i] != _col.GetHitObject())
+		{
+			sCol = objectArray[i]->SIntersection(sRay);
+
+			if (sCol.GetCollided() == true && sCol.GetHitObject() != _col.GetHitObject())
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+
+}
+
+glm::vec3 RayTracer::CalculatePointLights(Collision _col)
+{
+	glm::vec3 plCumulative(0.f, 0.f, 0.f);
+	Ray plRay;
+	Collision plCol;
+	plRay.origin = _col.GetCollisionPoint() + (_col.GetCollisionNormal()*0.1f);
+
+
+	//For each point in the point light array
+	for (int ipl = 0; ipl < plArray.size(); ipl++)
+	{
+		//plRay points from pixel to light 
+		plRay.direction = plArray[ipl]->GetDirection(_col.GetCollisionPoint());
+		//For each object in the scene
+		for (int i = 0; i < objectArray.size(); i++)
+		{
+			//Check collision on way to light
+			plCol = objectArray[i]->SIntersection(plRay);
+			if (!plCol.GetCollided() == true)
+			{
+				glm::vec3 thisLightColor = plArray[ipl]->CalculateShadingInfo(_col);
+				plCumulative += thisLightColor;
+			}
+		}
+	}
+
+	return plCumulative;
+}
+
+std::vector<Collision> RayTracer::GetCollisions(Ray _ray)
+{
 	Collision check;
-
-
 	std::vector<Collision> collisions;
 	std::vector<int> collidedElements;
 
-	bool collided = false;
 
 	for (int i = 0; i < objectArray.size(); i++)
 	{
@@ -45,139 +146,56 @@ glm::vec3 RayTracer::TraceRay(Ray _ray, int depth)
 			collisions.push_back(check);
 		}
 	}
+	return collisions;
+}
+
+Collision RayTracer::GetClosestCollision(std::vector<Collision> _collisions)
+{
+	int element;
+	float smallestDist;
 
 
-	if (collisions.size() > 0)
+	for (int i = 0; i < _collisions.size(); i++)
 	{
-		int element;
-		float smallestDist;
-
-
-		for (int i = 0; i < collisions.size(); i++)
+		if (i == 0)
 		{
-			if (i == 0)
+			smallestDist = _collisions[i].GetCollisionDist();
+			element = i;
+		}
+		else
+		{
+			if (smallestDist > _collisions[i].GetCollisionDist())
 			{
-				smallestDist = collisions[i].GetCollisionDist();
+				smallestDist = _collisions[i].GetCollisionDist();
 				element = i;
 			}
-			else
-			{
-				if (smallestDist > collisions[i].GetCollisionDist())
-				{
-					smallestDist = collisions[i].GetCollisionDist();
-					element = i;
-				}
-			}
-
 		}
 
-		// closest Object and object collision
-		Collision hitCol = collisions[element];
-
-
-
-		
-		
-		//if hit object is mirror
-		if (hitCol.GetHitObject()->GetMaterial()->GetMirror()==true && depth<10)
-		{
-
-			//cast ray in reflection direction
-			glm::vec3 hitNormal = hitCol.GetCollisionNormal();
-			glm::vec3 reflectionVec = Reflection(_ray.GetDirection(), hitNormal);
-			Ray reflectRay;
-
-			reflectRay.origin = (hitCol.GetCollisionPoint()+hitNormal*0.1f);
-			reflectRay.direction = glm::normalize(reflectionVec);
-
-
-			return TraceRay(reflectRay, depth + 1)*0.85f;
-
-		}
-
-
-		/*SHADOWS*/
-		bool shadowed = false;
-		//Define shadow ray and shadow collision
-		Ray sRay;
-		Collision sCol;
-		sRay.origin = hitCol.GetCollisionPoint() + (hitCol.GetCollisionNormal()*0.1f);
-		sRay.direction = glm::vec3(0.0f, 1.0f, 0.0f);
-
-		for (int i = 0; i < objectArray.size(); i++)
-		{
-			if (objectArray[i] != hitCol.GetHitObject())
-			{
-				sCol = objectArray[i]->SIntersection(sRay);
-
-				if (sCol.GetCollided() == true && sCol.GetHitObject() != hitCol.GetHitObject())
-				{
-					shadowed = true;
-				}
-			}
-		}
-
-
-		/*POINT LIGHTING*/
-		//Define cumulative light vector for all point lights
-		glm::vec3 plCumulative(0.f, 0.f, 0.f);
-		//Define point light ray and collision
-		Ray plRay;
-		Collision plCol;
-
-		
-		plRay.origin = hitCol.GetCollisionPoint() + (hitCol.GetCollisionNormal()*0.1f);
-
-		
-		//For each point in the point light array
-		for (int ipl = 0; ipl < plArray.size(); ipl++)
-		{
-			//plRay points from pixel to light 
-			plRay.direction = plArray[ipl]->GetDirection(hitCol.GetCollisionPoint());
-
-
-			//For each object in the scene
-			for (int i = 0; i < objectArray.size(); i++)
-			{
-				//Check collision on way to light
-				plCol = objectArray[i]->SIntersection(plRay);
-
-
-				if (!plCol.GetCollided() == true)
-				{
-					shadowed = false;
-					glm::vec3 thisLightColor = plArray[ipl]->CalculateShadingInfo(hitCol);
-					plCumulative += thisLightColor;
-				}
-				
-
-
-				
-			}
-		}
-		
-		
-		//plCumulative += plArray[ipl]->CalculateShadingInfo(hitCol.GetCollisionPoint());
-
-
-		//return plCumulative;
-		//plCumulative = plArray[0]->CalculateShadingInfo(hitCol.GetCollisionPoint());
-
-
-		//return hitCol.GetHitObject()->NormalShader(_ray, hitCol);
-		//return hitCol.GetHitObject()->DebugShader();
-
-
-
-		glm::vec3 hitColor = hitCol.GetHitObject()->DiffuseShader(_ray, hitCol, dlArray[0], plCumulative, shadowed);
-
-
-		return glm::clamp(hitColor, glm::vec3(0.0f), glm::vec3(1.0f));
 	}
+	Collision rtn = _collisions[element];
 
-	//Else return background
-	return backgroundColor;
-	
+	return rtn;
+}
+
+Ray RayTracer::GetReflectionRay(Ray _ray, Collision _col)
+{
+	glm::vec3 hitNormal = _col.GetCollisionNormal();
+	glm::vec3 reflectionVec = Reflection(_ray.GetDirection(), hitNormal);
+	Ray reflectRay;
+
+	reflectRay.origin = (_col.GetCollisionPoint() + hitNormal * 0.1f);
+	reflectRay.direction = glm::normalize(reflectionVec);
+
+
+	return reflectRay;
+}
+
+/* Math helper functions. */
+
+glm::vec3 RayTracer::Reflection(glm::vec3 _rayDir, glm::vec3 _surfaceNormal)
+{
+	glm::vec3 rtn = _rayDir - 2.0f * glm::dot(_rayDir, _surfaceNormal)*_surfaceNormal;
+	return rtn;
 }
 
 glm::vec3 RayTracer::ClosestPoint(Ray _ray, glm::vec3 _point)
@@ -186,40 +204,18 @@ glm::vec3 RayTracer::ClosestPoint(Ray _ray, glm::vec3 _point)
 	return temp;
 }
 
-Collision RayTracer::GetShadows(int element, Collision _col, std::shared_ptr<Object> obj)
+/* Functions for adding objects to scene. */
+
+void RayTracer::AddScene(Scene scene)
 {
-	Collision shadowCol;
-	Ray shadowRay;
-
-
-	shadowRay.origin = (_col.GetCollisionPoint() + (obj->ReturnSurfaceNormal(_col)));
-	shadowRay.direction = glm::vec3(0.f, 1.f, 0.f);
-
-
-
-	for (int i = 0; i < objectArray.size(); i++)
-	{
-		if (element != i)
-		{
-			shadowCol = objectArray[i]->Intersection(shadowRay);
-			if (shadowCol.GetCollided() == true)
-			{
-				
-				shadowCol.SetHitObject(objectArray[i]);
-				return shadowCol;
-			}
-
-		}
-	}
-	shadowCol.SetCollided(false);
-	return shadowCol;
-
-}
-
-glm::vec3 RayTracer::Reflection(glm::vec3 _rayDir, glm::vec3 _surfaceNormal)
-{
-	glm::vec3 rtn = _rayDir - 2.0f * glm::dot(_rayDir, _surfaceNormal)*_surfaceNormal;
-	return rtn;
+	std::cout << "** LOADING OBJECTS FROM SCENE **" << std::endl;
+	objectArray = scene.GetObjects();
+	std::cout << objectArray.size() << " object(s) loaded from scene." << std::endl;
+	dlArray = scene.GetDirectionalLights();
+	std::cout << dlArray.size() << " directional light(s) loaded from scene." << std::endl;
+	plArray = scene.GetPointLights();
+	std::cout << plArray.size() << " point lights(s) loaded from scene." << std::endl;
+	std::cout << "** OBJECT LOADING COMPLETE **" << std::endl;
 }
 
 void RayTracer::AddSphereToScene(glm::vec3 _coordinate, float _radius, std::shared_ptr<Material> _mat)

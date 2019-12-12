@@ -1,3 +1,7 @@
-﻿  Main.cpp
-c:\users\s4921584\hermesraytracer\mcg_gfx_framework\main.cpp(40): warning C4101: 'e': unreferenced local variable
+﻿  RayTracer.cpp
+c:\users\s4921584\hermesraytracer\mcg_gfx_framework\raytracer.cpp(86): warning C4018: '<': signed/unsigned mismatch
+c:\users\s4921584\hermesraytracer\mcg_gfx_framework\raytracer.cpp(111): warning C4018: '<': signed/unsigned mismatch
+c:\users\s4921584\hermesraytracer\mcg_gfx_framework\raytracer.cpp(116): warning C4018: '<': signed/unsigned mismatch
+c:\users\s4921584\hermesraytracer\mcg_gfx_framework\raytracer.cpp(138): warning C4018: '<': signed/unsigned mismatch
+c:\users\s4921584\hermesraytracer\mcg_gfx_framework\raytracer.cpp(158): warning C4018: '<': signed/unsigned mismatch
   MCG_GFX_Framework.vcxproj -> C:\Users\s4921584\HermesRayTracer\Debug\MCG_GFX_Framework.exe

@@ -9,6 +9,13 @@ Sphere::Sphere()
 {
 }
 
+Sphere::Sphere(glm::vec3 _centre, std::shared_ptr<Material> _material, float _radius)
+{
+	centre = _centre;
+	material = _material;
+	radius = _radius;
+}
+
 Sphere::~Sphere()
 {
 }

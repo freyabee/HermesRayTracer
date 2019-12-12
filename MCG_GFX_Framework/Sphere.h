@@ -13,6 +13,7 @@ class Sphere : public Object
 {
 public:
 	Sphere();
+	Sphere(glm::vec3 _centre, std::shared_ptr<Material> _material, float _radius);
 	 ~Sphere();
 	 //Shaders
 	glm::vec3 DiffuseShader(Ray _ray, Collision _col, std::shared_ptr<DirectionalLight> _dlight, glm::vec3 _plCumulative, bool _inShadow);
