@@ -53,7 +53,7 @@ glm::vec3 RayTracer::TraceRay(Ray _ray, int depth)
 		glm::vec3 plCumulative = CalculatePointLights(hitCol);
 		if (plCumulative != glm::vec3(0.f))
 		{
-			shadowed = false;
+
 		}
 
 
@@ -104,25 +104,40 @@ glm::vec3 RayTracer::CalculatePointLights(Collision _col)
 	glm::vec3 plCumulative(0.f, 0.f, 0.f);
 	Ray plRay;
 	Collision plCol;
+
+
+
 	plRay.origin = _col.GetCollisionPoint() + (_col.GetCollisionNormal()*0.1f);
-
-
 	//For each point in the point light array
 	for (int ipl = 0; ipl < plArray.size(); ipl++)
 	{
 		//plRay points from pixel to light 
 		plRay.direction = plArray[ipl]->GetDirection(_col.GetCollisionPoint());
 		//For each object in the scene
+
+		bool shadowed = false;
 		for (int i = 0; i < objectArray.size(); i++)
 		{
 			//Check collision on way to light
 			plCol = objectArray[i]->SIntersection(plRay);
-			if (!plCol.GetCollided() == true)
+			if (plCol.GetCollided() == true)
 			{
-				glm::vec3 thisLightColor = plArray[ipl]->CalculateShadingInfo(_col);
-				plCumulative += thisLightColor;
+				float distToMainObject = glm::distance(plArray[ipl]->GetCentre(), _col.GetCollisionPoint());
+				float distToCollision = glm::distance(plArray[ipl]->GetCentre(), plCol.GetCollisionPoint());
+
+				if (distToCollision < distToMainObject)
+				{
+					shadowed = true;
+				}
 			}
 		}
+		if (shadowed==false)
+		{
+			glm::vec3 thisLightColor = plArray[ipl]->CalculateShadingInfo(_col);
+			plCumulative += thisLightColor;
+		}
+
+
 	}
 
 	return plCumulative;

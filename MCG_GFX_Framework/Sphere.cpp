@@ -22,18 +22,21 @@ Sphere::~Sphere()
 
 glm::vec3 Sphere::DiffuseShader(Ray _ray, Collision _col, std::shared_ptr<DirectionalLight> _dlight, glm::vec3 _plCumulative,  bool _inShadow)
 {
-	if (_inShadow)
-	{
-		return glm::vec3(0.0f, 0.0f, 0.0f);
-	}
-
+	
 	glm::vec3 colNormal = _col.GetCollisionNormal();
 	glm::vec3 lightVec = -_dlight->GetDirection();
-	glm::vec3 light = ((_dlight->GetIntensity() * _dlight->GetColor())) * std::max(0.f, glm::dot(colNormal, lightVec));
+	glm::vec3 light = glm::vec3(0.f, 0.f, 0.f);
 
+	if (_inShadow)
+	{
+	}
+	else
+	{
+		light = ((_dlight->GetIntensity() * _dlight->GetColor())) * std::max(0.f, glm::dot(colNormal, lightVec));
+	}
+	
 	light += _plCumulative;
-
-
+	
 	glm::vec3 hitColor = material->GetAlbedo()/glm::pi<float>() * light;
 	return hitColor;
 }
@@ -103,8 +106,9 @@ Collision Sphere::Intersection(Ray _ray)
 
 	//first point of intersection (3d vec) 
 	glm::vec3 collisionPoint = _ray.origin + (((glm::dot((centre - _ray.origin), _ray.direction)) - x)*_ray.direction);
-	float collisionDist = glm::length(collisionPoint - _ray.origin);
+	//float collisionDist = glm::length(collisionPoint - _ray.origin);
 
+	float collisionDist = glm::distance(collisionPoint, _ray.origin);
 
 	col.SetCollided(true);
 	col.SetCollisionPoint(collisionPoint);

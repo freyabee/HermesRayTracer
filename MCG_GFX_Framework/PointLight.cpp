@@ -46,7 +46,7 @@ glm::vec3 PointLight::CalculateShadingInfo(Collision _hitcol)
 glm::vec3 PointLight::GetDirection(glm::vec3 _hitPoint)
 {
 	//Retur
-	glm::vec3 lightDir = glm::normalize(lightDir = centre - _hitPoint);
+	glm::vec3 lightDir = glm::normalize(centre - _hitPoint);
 	return lightDir;
 }
 

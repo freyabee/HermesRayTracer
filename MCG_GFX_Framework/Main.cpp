@@ -32,7 +32,6 @@ void RayTraceCoord(glm::ivec2 block, RayTracer _tracer, std::shared_ptr<Camera> 
 
 			try
 			{
-
 				MCG::DrawPixel(_pixelPosition, _pixelColour);
 			}
 			catch (std::exception& e)
@@ -100,10 +99,16 @@ int main( int argc, char *argv[] )
 	palette1.push_back(p_purple);
 	palette1.push_back(p_pink);
 	palette1.push_back(p_yellow);
+	//LIGHT SCENE
+	Scene lighting;
+	lighting.AddDirectionalLightToScene(glm::vec3(0.f, -1.f, 0.f), 0.5f, white);
+	//lighting.AddSphereToScene(glm::vec3(30.0f, 10.0f, -100.0f), 15.0f, white); 
+	lighting.AddSphereToScene(glm::vec3(0.0f, -10.0f, -100.0f), 10.0f, white);
+	lighting.AddPointLightToScene(glm::vec3(-20.0f, 5.0f, -110.0f), 300.0f, p_pink);
+	lighting.AddPointLightToScene(glm::vec3(20.0f, 5.0f, -110.0f), 500.0f, p_yellow);
+	lighting.AddPlaneToScene(glm::vec3(0.f, -20.f, -150.f), glm::vec3(0.f, 1.f, 0.f), white);
 
-	/* Define Scenes*/
-
-
+	//LIGHTING
 	Scene display;
 
 	display.AddSphereToScene(glm::vec3(-20.0f, -5.0f, -100.0f), 15.0f, mirror);
@@ -114,15 +119,16 @@ int main( int argc, char *argv[] )
 	display.AddSphereToScene(glm::vec3(-10.0f, -15.0f, -80.0f), 2.0f, p_yellow);
 
 
-	display.AddPointLightToScene(glm::vec3(-20.0f, 10.0f, -90.0f), 100.0f, p_pink);
-	display.AddPointLightToScene(glm::vec3(20.0f, 10.0f, -90.0f), 100.0f, p_purple);
-	display.AddPointLightToScene(glm::vec3(0.0f, 10.0f, -110.0f), 100.0f, p_yellow);
+	display.AddPointLightToScene(glm::vec3(-20.0f, 0.0f, -80.0f), 500.0f, p_pink);
+	display.AddPointLightToScene(glm::vec3(20.0f, 10.0f, -90.0f), 500.0f, p_purple);
+	display.AddPointLightToScene(glm::vec3(0.0f, 10.0f, -110.0f), 500.0f, p_yellow);
 
 	display.AddDirectionalLightToScene(glm::vec3(0.f, -1.f, 0.f), 1.5f, white);
 
+	//display.AddPlaneToScene(glm::vec3(0.f, 60.f, 150.f), glm::vec3(0.f, -1.f, 0.f), white);
 	display.AddPlaneToScene(glm::vec3(0.f, -20.f, -150.f), glm::vec3(0.f, 1.f, 0.f), white);
 	display.AddPlaneToScene(glm::vec3(0.f, 0.f, -200.f), glm::vec3(0.f, 0.f, 1.f), white);
-
+	display.AddPlaneToScene(glm::vec3(0.f, 0.f, 50.f), glm::vec3(0.f, 0.f, -1.f), white);
 
 	Scene grid;
 	
@@ -164,7 +170,7 @@ int main( int argc, char *argv[] )
 		/* Initialize ray and raytracer object. */
 		Ray currentRay;
 		RayTracer tracer(p_blue->GetAlbedo());
-		tracer.AddScene(grid);
+		tracer.AddScene(display);
 		/* Initialize pixel coordinate variable. */
 		glm::ivec2 pixelPosition;
 

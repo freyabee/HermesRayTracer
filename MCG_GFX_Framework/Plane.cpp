@@ -88,37 +88,10 @@ Collision Plane::SIntersection(Ray _ray)
 
 	}
 	{
-		//std::cout << "Plane not intersected" << std::endl;
 		rtn.SetCollided(false);
 		return rtn;
 	}
-	/*
-	//calculate difference between ray normal and direction
-	
-	float denom = glm::dot(_ray.GetDirection(), normal); //n dot N
 
-	Collision rtn;
-
-	if (denom > 1e-6)
-	{
-		float numerator = glm::dot((centre - _ray.GetOrigin()), normal);
-		float t = numerator / denom;
-
-		//if t in front of camera
-		if (t >= 0)
-		{
-			rtn.SetCollided(true);
-			rtn.SetCollisionNormal(normal);
-			rtn.SetCollisionPoint(glm::vec3(0,0,-999));
-		}
-
-	}
-	else
-	{
-		rtn.SetCollided(false);
-	}
-	return rtn;
-	*/
 }
 
 glm::vec3 Plane::ReturnSurfaceNormal(Collision _col)
@@ -128,21 +101,30 @@ glm::vec3 Plane::ReturnSurfaceNormal(Collision _col)
 
 glm::vec3 Plane::DiffuseShader(Ray _ray, Collision _col, std::shared_ptr<DirectionalLight> _dlight, glm::vec3 _plVec, bool _inShadow)
 {
-	if (_inShadow)
-	{
-		return glm::vec3(0.1f, 0.1f, 0.1f);
-	}
 
 	glm::vec3 hitPoint = _col.GetCollisionPoint();
 	glm::vec3 hitNormal = normal;
-	glm::vec3 lightVec = (_dlight->GetDirection())*-1.0f;
+	glm::vec3 lightVec = (_dlight->GetDirection())*1.0f;
+	glm::vec3 light(0.f, 0.f, 0.f);
+
+	if (_inShadow)
+	{
+		
+	}
+	else
+	{
+		light = _dlight->GetIntensity() * _dlight->GetColor() * std::max(0.f, glm::dot(hitNormal, -lightVec));
+	}
+	
 
 
-	glm::vec3 light = _dlight->GetIntensity() * _dlight->GetColor() * std::max(0.f, glm::dot(hitNormal, lightVec));
+	//glm::vec3 light = _dlight->GetIntensity() * _dlight->GetColor() * std::max(0.f, glm::dot(hitNormal, lightVec));
 
 	light += _plVec;
 
-	glm::vec3 hitColor = material->GetAlbedo() / glm::pi<float>() * light;
+	glm::vec3 hitColor = (material->GetAlbedo() / glm::pi<float>()) * light;
+
+
 	return hitColor;
 }
 

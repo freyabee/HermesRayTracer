@@ -1,8 +1,8 @@
 ﻿  Main.cpp
-c:\users\s4921584\hermesraytracer\mcg_gfx_framework\main.cpp(38): warning C4101: 'e': unreferenced local variable
+c:\users\freya\desktop\hermesraytracer\mcg_gfx_framework\main.cpp(37): warning C4101: 'e': unreferenced local variable
   Generating code
-  1 of 1219 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+  1 of 1193 functions (<0.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  MCG_GFX_Framework.vcxproj -> C:\Users\s4921584\HermesRayTracer\Release\MCG_GFX_Framework.exe
+  MCG_GFX_Framework.vcxproj -> C:\Users\Freya\Desktop\HermesRayTracer\Release\MCG_GFX_Framework.exe
